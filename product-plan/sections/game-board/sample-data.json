@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "models": {
+      "card": "A playing card with suit and rank, either face-up or face-down on the tableau.",
+      "column": "One of 10 tableau columns holding a stack of cards, with face-down cards at the bottom and face-up cards on top.",
+      "stock": "The remaining undealt cards, tracked as number of deals remaining (0-5).",
+      "foundation": "A completed King-to-Ace same-suit sequence that has been removed from play.",
+      "game": "The current game state including difficulty level, all card positions, and game statistics."
+    },
+    "relationships": [
+      "Game contains 10 Columns arranged horizontally across the board",
+      "Game has one Stock showing deals remaining",
+      "Game has 0-8 Foundations (completed suits)",
+      "Each Column holds a stack of Cards with face-down cards at the bottom",
+      "Foundations show completed suits as a count (cards are removed from play)"
+    ]
+  },
+  "game": {
+    "difficulty": 4,
+    "moves": 42,
+    "dealsRemaining": 3,
+    "foundationsCompleted": 2,
+    "columns": [
+      {
+        "id": "col-0",
+        "cards": [
+          { "suit": "spades", "rank": "5", "faceUp": false },
+          { "suit": "hearts", "rank": "J", "faceUp": false },
+          { "suit": "diamonds", "rank": "3", "faceUp": false },
+          { "suit": "clubs", "rank": "K", "faceUp": true },
+          { "suit": "clubs", "rank": "Q", "faceUp": true },
+          { "suit": "clubs", "rank": "J", "faceUp": true },
+          { "suit": "clubs", "rank": "10", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-1",
+        "cards": [
+          { "suit": "hearts", "rank": "8", "faceUp": false },
+          { "suit": "spades", "rank": "2", "faceUp": false },
+          { "suit": "diamonds", "rank": "7", "faceUp": true },
+          { "suit": "spades", "rank": "6", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-2",
+        "cards": [
+          { "suit": "clubs", "rank": "4", "faceUp": false },
+          { "suit": "hearts", "rank": "K", "faceUp": true },
+          { "suit": "diamonds", "rank": "Q", "faceUp": true },
+          { "suit": "hearts", "rank": "J", "faceUp": true },
+          { "suit": "hearts", "rank": "10", "faceUp": true },
+          { "suit": "hearts", "rank": "9", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-3",
+        "cards": [
+          { "suit": "spades", "rank": "9", "faceUp": false },
+          { "suit": "diamonds", "rank": "A", "faceUp": false },
+          { "suit": "clubs", "rank": "6", "faceUp": true },
+          { "suit": "diamonds", "rank": "5", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-4",
+        "cards": [
+          { "suit": "hearts", "rank": "4", "faceUp": false },
+          { "suit": "spades", "rank": "Q", "faceUp": true },
+          { "suit": "spades", "rank": "J", "faceUp": true },
+          { "suit": "spades", "rank": "10", "faceUp": true },
+          { "suit": "spades", "rank": "9", "faceUp": true },
+          { "suit": "spades", "rank": "8", "faceUp": true },
+          { "suit": "spades", "rank": "7", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-5",
+        "cards": [
+          { "suit": "diamonds", "rank": "10", "faceUp": false },
+          { "suit": "clubs", "rank": "3", "faceUp": false },
+          { "suit": "hearts", "rank": "6", "faceUp": true },
+          { "suit": "clubs", "rank": "5", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-6",
+        "cards": [
+          { "suit": "spades", "rank": "4", "faceUp": false },
+          { "suit": "hearts", "rank": "2", "faceUp": true },
+          { "suit": "diamonds", "rank": "A", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-7",
+        "cards": [
+          { "suit": "diamonds", "rank": "8", "faceUp": false },
+          { "suit": "clubs", "rank": "9", "faceUp": true },
+          { "suit": "clubs", "rank": "8", "faceUp": true },
+          { "suit": "clubs", "rank": "7", "faceUp": true }
+        ]
+      },
+      {
+        "id": "col-8",
+        "cards": []
+      },
+      {
+        "id": "col-9",
+        "cards": [
+          { "suit": "hearts", "rank": "7", "faceUp": false },
+          { "suit": "spades", "rank": "K", "faceUp": true },
+          { "suit": "hearts", "rank": "Q", "faceUp": true },
+          { "suit": "diamonds", "rank": "J", "faceUp": true },
+          { "suit": "diamonds", "rank": "10", "faceUp": true },
+          { "suit": "diamonds", "rank": "9", "faceUp": true }
+        ]
+      }
+    ]
+  }
+}
