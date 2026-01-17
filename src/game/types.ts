@@ -58,10 +58,13 @@ export interface UserPreferences {
 // Game Board Props
 // =============================================================================
 
+export type CardArt = 'classic' | 'modern' | 'minimal'
+
 export interface GameBoardPreferences {
   showValidDropTargets: boolean
   autoMoveCompletedSuits: boolean
   showCelebration: boolean
+  cardArt: CardArt
 }
 
 export interface GameBoardProps {

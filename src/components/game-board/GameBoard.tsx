@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import type { GameBoardProps } from '../../game/types'
+import type { GameBoardProps, Column as ColumnType } from '../../game/types'
 import { Column } from './Column'
 import { StockPile } from './StockPile'
 import { FoundationArea } from './FoundationArea'
+import { isValidMove, canMoveSameSequence } from '../../game/moves'
 
 interface DragState {
   fromColumnId: string
@@ -36,6 +37,22 @@ export function GameBoard({
     setDragState(null)
   }
 
+  // Check if dropping on a specific column would be a valid move
+  const isColumnValidTarget = (targetColumn: ColumnType): boolean => {
+    if (!dragState) return false
+    if (dragState.fromColumnId === targetColumn.id) return false
+
+    const fromCol = game.columns.find((c) => c.id === dragState.fromColumnId)
+    if (!fromCol) return false
+
+    // Check if the sequence can be moved
+    if (!canMoveSameSequence(fromCol, dragState.cardIndex)) return false
+
+    // Check if it can be placed on the target
+    const movingCard = fromCol.cards[dragState.cardIndex]
+    return isValidMove(movingCard, targetColumn)
+  }
+
   return (
     <div className="h-full w-full bg-emerald-900 p-2 sm:p-4 md:p-6 flex flex-col">
       {/* Status bar with stock and foundations */}
@@ -58,8 +75,9 @@ export function GameBoard({
           <Column
             key={column.id}
             column={column}
-            isValidTarget={dragState !== null && dragState.fromColumnId !== column.id}
+            isValidTarget={isColumnValidTarget(column)}
             showValidDropTargets={preferences.showValidDropTargets}
+            cardArt={preferences.cardArt}
             onCardDragStart={handleCardDragStart}
             onCardDragEnd={handleCardDragEnd}
             onDrop={handleDrop}

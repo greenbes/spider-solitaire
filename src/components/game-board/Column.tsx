@@ -1,10 +1,11 @@
-import type { Column as ColumnType } from '../../game/types'
+import type { Column as ColumnType, CardArt } from '../../game/types'
 import { Card } from './Card'
 
 interface ColumnProps {
   column: ColumnType
   isValidTarget?: boolean
   showValidDropTargets?: boolean
+  cardArt?: CardArt
   onCardDragStart?: (columnId: string, cardIndex: number) => void
   onCardDragEnd?: () => void
   onDrop?: (columnId: string) => void
@@ -14,6 +15,7 @@ export function Column({
   column,
   isValidTarget,
   showValidDropTargets,
+  cardArt = 'classic',
   onCardDragStart,
   onCardDragEnd,
   onDrop,
@@ -79,6 +81,7 @@ export function Column({
               card={card}
               isValidTarget={isTopCard && isValidTarget}
               showHighlight={showValidDropTargets}
+              cardArt={cardArt}
             />
           </div>
         )

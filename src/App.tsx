@@ -3,7 +3,7 @@ import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
 import { gameReducer, initialGameState } from './game'
 import { usePreferences } from './hooks/usePreferences'
-import type { Difficulty, Suit, GameBoardPreferences } from './game/types'
+import type { Difficulty, Suit, GameBoardPreferences, CardArt } from './game/types'
 
 function App() {
   const [state, dispatch] = useReducer(gameReducer, initialGameState)
@@ -55,9 +55,10 @@ function App() {
   const canUndo = state.history.length > 0
 
   const gameBoardPreferences: GameBoardPreferences = {
-    showValidDropTargets: false,
+    showValidDropTargets: true,
     autoMoveCompletedSuits: true,
     showCelebration: true,
+    cardArt: (preferences.cardArt as CardArt) || 'classic',
   }
 
   return (
