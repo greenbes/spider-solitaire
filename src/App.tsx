@@ -3,7 +3,8 @@ import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
 import { gameReducer, initialGameState } from './game'
 import { usePreferences } from './hooks/usePreferences'
-import type { Difficulty, Suit, GameBoardPreferences, CardArt } from './game/types'
+import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme } from './game/types'
+import { getThemeStyles } from './game/themes'
 
 function App() {
   const [state, dispatch] = useReducer(gameReducer, initialGameState)
@@ -54,11 +55,15 @@ function App() {
   const canDeal = state.game.dealsRemaining > 0 && !hasEmptyColumn
   const canUndo = state.history.length > 0
 
+  const theme = (preferences.theme as Theme) || 'green-felt'
+  const themeStyles = getThemeStyles(theme)
+
   const gameBoardPreferences: GameBoardPreferences = {
     showValidDropTargets: true,
     autoMoveCompletedSuits: true,
     showCelebration: true,
     cardArt: (preferences.cardArt as CardArt) || 'classic',
+    theme,
   }
 
   return (
@@ -91,8 +96,8 @@ function App() {
           onCardFlip={handleCardFlip}
         />
       ) : (
-        <div className="h-full w-full bg-emerald-900 flex items-center justify-center">
-          <p className="text-emerald-300 text-lg">Select difficulty to start</p>
+        <div className={`h-full w-full ${themeStyles.background} flex items-center justify-center`}>
+          <p className={`${themeStyles.text} text-lg`}>Select difficulty to start</p>
         </div>
       )}
 

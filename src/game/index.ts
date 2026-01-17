@@ -1,6 +1,9 @@
 // Types
 export * from './types'
 
+// Themes
+export * from './themes'
+
 // Constants
 export * from './constants'
 

@@ -4,6 +4,7 @@ import { Column } from './Column'
 import { StockPile } from './StockPile'
 import { FoundationArea } from './FoundationArea'
 import { isValidMove, canMoveSameSequence } from '../../game/moves'
+import { getThemeStyles } from '../../game/themes'
 
 interface DragState {
   fromColumnId: string
@@ -17,6 +18,7 @@ export function GameBoard({
   onDeal,
 }: GameBoardProps) {
   const [dragState, setDragState] = useState<DragState | null>(null)
+  const themeStyles = getThemeStyles(preferences.theme)
 
   // Check if any column is empty (deal is disabled if so)
   const hasEmptyColumn = game.columns.some((col) => col.cards.length === 0)
@@ -54,18 +56,20 @@ export function GameBoard({
   }
 
   return (
-    <div className="h-full w-full bg-emerald-900 p-2 sm:p-4 md:p-6 flex flex-col">
+    <div className={`h-full w-full ${themeStyles.background} p-2 sm:p-4 md:p-6 flex flex-col`}>
       {/* Status bar with stock and foundations */}
       <div className="flex items-start justify-between mb-4 sm:mb-6">
         <StockPile
           dealsRemaining={game.dealsRemaining}
           canDeal={canDeal}
           onDeal={onDeal}
+          theme={preferences.theme}
         />
 
         <FoundationArea
           foundationsCompleted={game.foundationsCompleted}
           showCelebration={preferences.showCelebration}
+          theme={preferences.theme}
         />
       </div>
 

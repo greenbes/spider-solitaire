@@ -60,11 +60,14 @@ export interface UserPreferences {
 
 export type CardArt = 'classic' | 'modern' | 'minimal'
 
+export type Theme = 'green-felt' | 'blue-felt' | 'wood' | 'dark'
+
 export interface GameBoardPreferences {
   showValidDropTargets: boolean
   autoMoveCompletedSuits: boolean
   showCelebration: boolean
   cardArt: CardArt
+  theme: Theme
 }
 
 export interface GameBoardProps {
