@@ -113,6 +113,54 @@
       "createdAt": "2026-01-18",
       "completedAt": "2026-01-18",
       "dependencies": [1]
+    },
+    {
+      "id": 4,
+      "title": "Create static errors.html with generic error message",
+      "type": "ui",
+      "priority": "medium",
+      "complexity": "low",
+      "status": "completed",
+      "description": "Create a static errors.html file in the root directory (same location as index.html) that displays 'Something went wrong'. Match the app's design system (stone background, DM Sans font, centered layout). No buttons, branding, or logos.",
+      "subtasks": [],
+      "relatedFiles": [
+        "errors.html",
+        "index.html"
+      ],
+      "createdAt": "2026-01-18",
+      "completedAt": "2026-01-18",
+      "dependencies": []
+    },
+    {
+      "id": 5,
+      "title": "Create justfile with S3 deploy action",
+      "type": "devops",
+      "priority": "medium",
+      "complexity": "low",
+      "status": "completed",
+      "description": "Create a justfile with a 'deploy' recipe that uploads the built application (dist/) and support files (errors.html) to an S3 bucket. Read bucket name from S3_BUCKET environment variable. Assume app is already built.",
+      "subtasks": [
+        {
+          "id": "5.1",
+          "title": "Create justfile with default list recipe",
+          "status": "completed",
+          "file": "justfile",
+          "details": "Create justfile with default recipe that lists available commands."
+        },
+        {
+          "id": "5.2",
+          "title": "Add deploy recipe for S3 upload",
+          "status": "completed",
+          "file": "justfile",
+          "details": "Add deploy recipe that syncs dist/ and errors.html to S3 bucket from $S3_BUCKET env var."
+        }
+      ],
+      "relatedFiles": [
+        "justfile"
+      ],
+      "createdAt": "2026-01-18",
+      "completedAt": "2026-01-18",
+      "dependencies": []
     }
   ]
 }

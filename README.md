@@ -41,9 +41,9 @@ npm run test:run # Run tests once
 
 | Status | Count | Progress |
 |--------|-------|----------|
-| Completed | 2 | ████████████████████████████████████████ 67% |
-| Pending | 1 | ████████████████████ 33% |
-| **Total** | **3** | |
+| Completed | 5 | ████████████████████████████████████████ 100% |
+| Pending | 0 | |
+| **Total** | **5** | |
 
 ---
 
@@ -57,14 +57,17 @@ npm run test:run # Run tests once
   - Type: ui | Priority: low | Complexity: low
   - Completed: 2026-01-18
 
----
-
-### Pending
-
-- [ ] **#3** Flash hint cards 10 times then auto-dismiss
+- [x] **#3** Flash hint cards 10 times then auto-dismiss
   - Type: enhancement | Priority: low | Complexity: low-medium
-  - Dependencies: #1 (completed)
-  - Subtasks: 2 pending
+  - Completed: 2026-01-18
+
+- [x] **#4** Create static errors.html with generic error message
+  - Type: ui | Priority: medium | Complexity: low
+  - Completed: 2026-01-18
+
+- [x] **#5** Create justfile with S3 deploy action
+  - Type: devops | Priority: medium | Complexity: low
+  - Completed: 2026-01-18
 
 ---
 
