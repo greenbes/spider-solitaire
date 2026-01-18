@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-01-18",
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Add Hint button to suggest next move with card highlighting",
+      "type": "feature",
+      "priority": "medium",
+      "complexity": "medium-high",
+      "status": "pending",
+      "description": "Add a 'Hint' button to the toolbar that analyzes the current game state and highlights a recommended move by visually emphasizing the source card stack and target column.",
+      "subtasks": [
+        {
+          "id": "1.1",
+          "title": "Create hint detection logic",
+          "status": "pending",
+          "file": "src/game/hints.ts",
+          "details": "Find all valid moves by iterating columns and movable sequences. Prioritize moves: same-suit building > revealing face-down cards > any valid move. Return { fromColumnId, cardIndex, toColumnId } or null if no moves."
+        },
+        {
+          "id": "1.2",
+          "title": "Add Hint type definitions",
+          "status": "pending",
+          "file": "src/game/types.ts",
+          "details": "Add Hint interface: { fromColumnId: string, cardIndex: number, toColumnId: string }. Add onHint callback to AppShellProps and GameToolbarProps."
+        },
+        {
+          "id": "1.3",
+          "title": "Add Hint button to toolbar",
+          "status": "pending",
+          "file": "src/components/shell/GameToolbar.tsx",
+          "details": "Add button between Undo and Deal using Lightbulb icon from lucide-react. Wire up onHint callback."
+        },
+        {
+          "id": "1.4",
+          "title": "Add hint state to App",
+          "status": "pending",
+          "file": "src/App.tsx",
+          "details": "Track activeHint: Hint | null in local state. Clear hint on any game action (move, deal, undo, new game). Pass hint down to GameBoard."
+        },
+        {
+          "id": "1.5",
+          "title": "Add visual highlighting for hints",
+          "status": "pending",
+          "file": "src/components/game-board/",
+          "details": "Highlight source cards with pulsing amber border/glow. Highlight target column with amber drop indicator. Clear highlight when hint is dismissed or move is made."
+        }
+      ],
+      "relatedFiles": [
+        "src/game/moves.ts",
+        "src/game/types.ts",
+        "src/components/shell/GameToolbar.tsx",
+        "src/components/game-board/Card.tsx",
+        "src/App.tsx"
+      ],
+      "createdAt": "2026-01-18",
+      "dependencies": []
+    }
+  ]
+}
