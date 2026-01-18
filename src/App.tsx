@@ -20,6 +20,19 @@ function App() {
     }
   }, [state.gameStarted])
 
+  // Auto-dismiss hint after 10 flashes (animate-pulse is 2s per cycle)
+  useEffect(() => {
+    if (!activeHint) return
+
+    const FLASH_COUNT = 10
+    const PULSE_DURATION_MS = 2000 // Tailwind animate-pulse duration
+    const timeout = setTimeout(() => {
+      setActiveHint(null)
+    }, FLASH_COUNT * PULSE_DURATION_MS)
+
+    return () => clearTimeout(timeout)
+  }, [activeHint])
+
   const handleNewGame = useCallback((difficulty: Difficulty) => {
     dispatch({ type: 'NEW_GAME', payload: { difficulty } })
     setIsNewGameOpen(false)

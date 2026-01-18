@@ -41,8 +41,8 @@ npm run test:run # Run tests once
 
 | Status | Count | Progress |
 |--------|-------|----------|
-| Completed | 1 | ████████████████████ 33% |
-| Pending | 2 | ████████████████████████████████████████ 67% |
+| Completed | 2 | ████████████████████████████████████████ 67% |
+| Pending | 1 | ████████████████████ 33% |
 | **Total** | **3** | |
 
 ---
@@ -53,18 +53,17 @@ npm run test:run # Run tests once
   - Type: feature | Priority: medium | Complexity: medium-high
   - Completed: 2026-01-18
 
+- [x] **#2** Move Hint button to left of Moves indicator
+  - Type: ui | Priority: low | Complexity: low
+  - Completed: 2026-01-18
+
 ---
 
 ### Pending
 
-- [ ] **#2** Move Hint button to left of Moves indicator
-  - Type: ui | Priority: low | Complexity: low
-  - Dependencies: #1
-  - Subtasks: 1 pending
-
 - [ ] **#3** Flash hint cards 10 times then auto-dismiss
   - Type: enhancement | Priority: low | Complexity: low-medium
-  - Dependencies: #1
+  - Dependencies: #1 (completed)
   - Subtasks: 2 pending
 
 ---

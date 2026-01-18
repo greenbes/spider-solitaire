@@ -88,20 +88,20 @@
       "type": "enhancement",
       "priority": "low",
       "complexity": "low-medium",
-      "status": "pending",
+      "status": "completed",
       "description": "When the user presses the Hint button, animate the highlighted cards with 10 flashes (pulse cycles) then automatically clear the hint state. Currently hints persist until the user makes a move.",
       "subtasks": [
         {
           "id": "3.1",
           "title": "Add flash counter state",
-          "status": "pending",
+          "status": "completed",
           "file": "src/App.tsx",
           "details": "Track number of flash cycles using state or ref."
         },
         {
           "id": "3.2",
           "title": "Implement timed flash effect",
-          "status": "pending",
+          "status": "completed",
           "file": "src/App.tsx",
           "details": "Use useEffect with setInterval to count 10 pulse cycles (matching CSS animation duration), then call setActiveHint(null) to auto-dismiss."
         }
@@ -111,6 +111,7 @@
         "src/components/game-board/Card.tsx"
       ],
       "createdAt": "2026-01-18",
+      "completedAt": "2026-01-18",
       "dependencies": [1]
     }
   ]
