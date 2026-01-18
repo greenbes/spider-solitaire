@@ -6,7 +6,7 @@ const STORAGE_KEY = 'spider-solitaire-preferences'
 const defaultPreferences: UserPreferences = {
   toolbarPosition: 'bottom',
   showStatistics: true,
-  cardSize: 'medium',
+  cardSize: 'large',
   highContrast: false,
   cardArt: 'classic',
   theme: 'green-felt',

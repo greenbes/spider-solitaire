@@ -12,7 +12,7 @@ const defaultStats: GameStats = {
 const defaultPreferences: UserPreferences = {
   toolbarPosition: 'bottom',
   showStatistics: true,
-  cardSize: 'medium',
+  cardSize: 'large',
   highContrast: false,
   cardArt: 'classic',
   theme: 'green-felt',

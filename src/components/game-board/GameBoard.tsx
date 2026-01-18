@@ -82,6 +82,7 @@ export function GameBoard({
             isValidTarget={isColumnValidTarget(column)}
             showValidDropTargets={preferences.showValidDropTargets}
             cardArt={preferences.cardArt}
+            cardSize={preferences.cardSize}
             onCardDragStart={handleCardDragStart}
             onCardDragEnd={handleCardDragEnd}
             onDrop={handleDrop}

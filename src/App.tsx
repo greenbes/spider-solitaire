@@ -3,7 +3,7 @@ import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
 import { gameReducer, initialGameState } from './game'
 import { usePreferences } from './hooks/usePreferences'
-import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme } from './game/types'
+import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme, CardSize } from './game/types'
 import { getThemeStyles } from './game/themes'
 
 function App() {
@@ -64,6 +64,7 @@ function App() {
     showCelebration: true,
     cardArt: (preferences.cardArt as CardArt) || 'classic',
     theme,
+    cardSize: (preferences.cardSize as CardSize) || 'large',
   }
 
   return (

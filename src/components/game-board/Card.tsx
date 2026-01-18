@@ -1,4 +1,4 @@
-import type { Card as CardType, Suit, CardArt } from '../../game/types'
+import type { Card as CardType, Suit, CardArt, CardSize } from '../../game/types'
 
 interface CardProps {
   card: CardType
@@ -6,7 +6,36 @@ interface CardProps {
   isValidTarget?: boolean
   showHighlight?: boolean
   cardArt?: CardArt
+  cardSize?: CardSize
 }
+
+// Indicator size classes for corner rank and suit symbols
+const INDICATOR_SIZES = {
+  small: {
+    classicRank: 'text-xs',
+    classicSuit: 'text-sm',
+    modernRank: 'text-sm sm:text-base',
+    modernSuit: 'text-xs',
+    minimalRank: 'text-sm sm:text-base',
+    minimalSuit: 'text-xs',
+  },
+  medium: {
+    classicRank: 'text-sm sm:text-base',
+    classicSuit: 'text-base sm:text-lg',
+    modernRank: 'text-lg sm:text-xl',
+    modernSuit: 'text-sm sm:text-base',
+    minimalRank: 'text-base sm:text-lg',
+    minimalSuit: 'text-xs sm:text-sm',
+  },
+  large: {
+    classicRank: 'text-base sm:text-lg md:text-xl',
+    classicSuit: 'text-lg sm:text-xl md:text-2xl',
+    modernRank: 'text-xl sm:text-2xl md:text-3xl',
+    modernSuit: 'text-base sm:text-lg md:text-xl',
+    minimalRank: 'text-lg sm:text-xl md:text-2xl',
+    minimalSuit: 'text-sm sm:text-base',
+  },
+} as const
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   spades: '♠',
@@ -85,9 +114,10 @@ function CardBack({ isDragging, cardArt }: { isDragging?: boolean; cardArt: Card
 }
 
 // Classic card style - traditional layout
-function ClassicCard({ card, isDragging, isValidTarget, showHighlight }: Omit<CardProps, 'cardArt'>) {
+function ClassicCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
+  const sizes = INDICATOR_SIZES[cardSize]
 
   return (
     <div
@@ -104,29 +134,30 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight }: Omit<Ca
     >
       {/* Top left rank and suit */}
       <div className={`flex flex-col items-start leading-none ${colorClass}`}>
-        <span className="text-sm sm:text-base md:text-lg font-bold">{card.rank}</span>
-        <span className="text-base sm:text-lg md:text-xl -mt-1">{symbol}</span>
+        <span className={`${sizes.classicRank} font-bold`}>{card.rank}</span>
+        <span className={`${sizes.classicSuit} -mt-1`}>{symbol}</span>
       </div>
 
-      {/* Center suit (large) */}
+      {/* Center suit (large) - size unchanged */}
       <div className={`flex-1 flex items-center justify-center ${colorClass}`}>
         <span className="text-3xl sm:text-4xl md:text-5xl">{symbol}</span>
       </div>
 
       {/* Bottom right rank and suit (inverted) */}
       <div className={`flex flex-col items-end leading-none rotate-180 ${colorClass}`}>
-        <span className="text-sm sm:text-base md:text-lg font-bold">{card.rank}</span>
-        <span className="text-base sm:text-lg md:text-xl -mt-1">{symbol}</span>
+        <span className={`${sizes.classicRank} font-bold`}>{card.rank}</span>
+        <span className={`${sizes.classicSuit} -mt-1`}>{symbol}</span>
       </div>
     </div>
   )
 }
 
 // Modern card style - clean, contemporary design
-function ModernCard({ card, isDragging, isValidTarget, showHighlight }: Omit<CardProps, 'cardArt'>) {
+function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
   const bgClass = MODERN_BG_COLORS[card.suit]
+  const sizes = INDICATOR_SIZES[cardSize]
 
   return (
     <div
@@ -144,28 +175,29 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight }: Omit<Car
     >
       {/* Top section with rank */}
       <div className={`flex items-center justify-between px-2 pt-1.5 sm:px-3 sm:pt-2 ${colorClass}`}>
-        <span className="text-lg sm:text-xl md:text-2xl font-light">{card.rank}</span>
-        <span className="text-sm sm:text-base md:text-lg opacity-60">{symbol}</span>
+        <span className={`${sizes.modernRank} font-light`}>{card.rank}</span>
+        <span className={`${sizes.modernSuit} opacity-60`}>{symbol}</span>
       </div>
 
-      {/* Center - large decorative suit */}
+      {/* Center - large decorative suit (size unchanged) */}
       <div className={`flex-1 flex items-center justify-center ${colorClass}`}>
         <span className="text-4xl sm:text-5xl md:text-6xl opacity-20">{symbol}</span>
       </div>
 
       {/* Bottom section */}
       <div className={`flex items-center justify-between px-2 pb-1.5 sm:px-3 sm:pb-2 rotate-180 ${colorClass}`}>
-        <span className="text-lg sm:text-xl md:text-2xl font-light">{card.rank}</span>
-        <span className="text-sm sm:text-base md:text-lg opacity-60">{symbol}</span>
+        <span className={`${sizes.modernRank} font-light`}>{card.rank}</span>
+        <span className={`${sizes.modernSuit} opacity-60`}>{symbol}</span>
       </div>
     </div>
   )
 }
 
 // Minimal card style - stripped down, clean
-function MinimalCard({ card, isDragging, isValidTarget, showHighlight }: Omit<CardProps, 'cardArt'>) {
+function MinimalCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
+  const sizes = INDICATOR_SIZES[cardSize]
 
   return (
     <div
@@ -182,8 +214,8 @@ function MinimalCard({ card, isDragging, isValidTarget, showHighlight }: Omit<Ca
     >
       {/* Top left - just rank and small suit */}
       <div className={`flex items-baseline gap-0.5 ${colorClass}`}>
-        <span className="text-base sm:text-lg md:text-xl font-semibold">{card.rank}</span>
-        <span className="text-xs sm:text-sm">{symbol}</span>
+        <span className={`${sizes.minimalRank} font-semibold`}>{card.rank}</span>
+        <span className={sizes.minimalSuit}>{symbol}</span>
       </div>
 
       {/* Empty middle - intentionally minimal */}
@@ -191,25 +223,25 @@ function MinimalCard({ card, isDragging, isValidTarget, showHighlight }: Omit<Ca
 
       {/* Bottom right (inverted) */}
       <div className={`flex items-baseline gap-0.5 self-end rotate-180 ${colorClass}`}>
-        <span className="text-base sm:text-lg md:text-xl font-semibold">{card.rank}</span>
-        <span className="text-xs sm:text-sm">{symbol}</span>
+        <span className={`${sizes.minimalRank} font-semibold`}>{card.rank}</span>
+        <span className={sizes.minimalSuit}>{symbol}</span>
       </div>
     </div>
   )
 }
 
-export function Card({ card, isDragging, isValidTarget, showHighlight, cardArt = 'classic' }: CardProps) {
+export function Card({ card, isDragging, isValidTarget, showHighlight, cardArt = 'classic', cardSize = 'large' }: CardProps) {
   if (!card.faceUp) {
     return <CardBack isDragging={isDragging} cardArt={cardArt} />
   }
 
   switch (cardArt) {
     case 'modern':
-      return <ModernCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} />
+      return <ModernCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
     case 'minimal':
-      return <MinimalCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} />
+      return <MinimalCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
     case 'classic':
     default:
-      return <ClassicCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} />
+      return <ClassicCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
   }
 }

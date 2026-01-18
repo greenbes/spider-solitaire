@@ -62,12 +62,15 @@ export type CardArt = 'classic' | 'modern' | 'minimal'
 
 export type Theme = 'green-felt' | 'blue-felt' | 'wood' | 'dark'
 
+export type CardSize = 'small' | 'medium' | 'large'
+
 export interface GameBoardPreferences {
   showValidDropTargets: boolean
   autoMoveCompletedSuits: boolean
   showCelebration: boolean
   cardArt: CardArt
   theme: Theme
+  cardSize: CardSize
 }
 
 export interface GameBoardProps {
