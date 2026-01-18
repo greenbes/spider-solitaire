@@ -144,7 +144,7 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, cardSize 
       </div>
 
       {/* Bottom right rank and suit (inverted) */}
-      <div className={`flex flex-col items-end leading-none rotate-180 ${colorClass}`}>
+      <div className={`flex flex-col items-end leading-none rotate-180 self-end ${colorClass}`}>
         <span className={`${sizes.classicRank} font-bold`}>{card.rank}</span>
         <span className={`${sizes.classicSuit} -mt-1`}>{symbol}</span>
       </div>
@@ -174,7 +174,7 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize =
       `}
     >
       {/* Top section with rank */}
-      <div className={`flex items-center justify-between px-2 pt-1.5 sm:px-3 sm:pt-2 ${colorClass}`}>
+      <div className={`flex items-center gap-1 px-2 pt-1.5 sm:px-3 sm:pt-2 ${colorClass}`}>
         <span className={`${sizes.modernRank} font-light`}>{card.rank}</span>
         <span className={`${sizes.modernSuit} opacity-60`}>{symbol}</span>
       </div>
@@ -185,7 +185,7 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize =
       </div>
 
       {/* Bottom section */}
-      <div className={`flex items-center justify-between px-2 pb-1.5 sm:px-3 sm:pb-2 rotate-180 ${colorClass}`}>
+      <div className={`flex items-center gap-1 px-2 pb-1.5 sm:px-3 sm:pb-2 rotate-180 self-end ${colorClass}`}>
         <span className={`${sizes.modernRank} font-light`}>{card.rank}</span>
         <span className={`${sizes.modernSuit} opacity-60`}>{symbol}</span>
       </div>
