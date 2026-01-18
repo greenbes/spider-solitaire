@@ -5,6 +5,7 @@ interface CardProps {
   isDragging?: boolean
   isValidTarget?: boolean
   showHighlight?: boolean
+  isHinted?: boolean
   cardArt?: CardArt
   cardSize?: CardSize
 }
@@ -114,10 +115,16 @@ function CardBack({ isDragging, cardArt }: { isDragging?: boolean; cardArt: Card
 }
 
 // Classic card style - traditional layout
-function ClassicCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
+function ClassicCard({ card, isDragging, isValidTarget, showHighlight, isHinted, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
   const sizes = INDICATOR_SIZES[cardSize]
+
+  const getBorderClass = () => {
+    if (isHinted) return 'border-amber-400 ring-2 ring-amber-400/60 animate-pulse'
+    if (isValidTarget && showHighlight) return 'border-amber-400 ring-2 ring-amber-400/50'
+    return 'border-stone-300 dark:border-stone-400'
+  }
 
   return (
     <div
@@ -125,7 +132,7 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, cardSize 
         w-full aspect-[2.5/3.5] rounded-lg
         bg-white dark:bg-stone-100
         border-2
-        ${isValidTarget && showHighlight ? 'border-amber-400 ring-2 ring-amber-400/50' : 'border-stone-300 dark:border-stone-400'}
+        ${getBorderClass()}
         shadow-md
         flex flex-col justify-between p-1.5 sm:p-2
         ${isDragging ? 'opacity-50 scale-105' : ''}
@@ -153,11 +160,17 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, cardSize 
 }
 
 // Modern card style - clean, contemporary design
-function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
+function ModernCard({ card, isDragging, isValidTarget, showHighlight, isHinted, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
   const bgClass = MODERN_BG_COLORS[card.suit]
   const sizes = INDICATOR_SIZES[cardSize]
+
+  const getBorderClass = () => {
+    if (isHinted) return 'border-amber-400 ring-2 ring-amber-400/60 animate-pulse'
+    if (isValidTarget && showHighlight) return 'border-amber-400 ring-2 ring-amber-400/50'
+    return 'border-stone-200'
+  }
 
   return (
     <div
@@ -165,7 +178,7 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize =
         w-full aspect-[2.5/3.5] rounded-xl
         ${bgClass}
         border
-        ${isValidTarget && showHighlight ? 'border-amber-400 ring-2 ring-amber-400/50' : 'border-stone-200'}
+        ${getBorderClass()}
         shadow-lg
         flex flex-col
         ${isDragging ? 'opacity-50 scale-105' : ''}
@@ -194,10 +207,16 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight, cardSize =
 }
 
 // Minimal card style - stripped down, clean
-function MinimalCard({ card, isDragging, isValidTarget, showHighlight, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
+function MinimalCard({ card, isDragging, isValidTarget, showHighlight, isHinted, cardSize = 'large' }: Omit<CardProps, 'cardArt'>) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const colorClass = SUIT_COLORS[card.suit]
   const sizes = INDICATOR_SIZES[cardSize]
+
+  const getBorderClass = () => {
+    if (isHinted) return 'border-amber-400 ring-2 ring-amber-400/60 animate-pulse'
+    if (isValidTarget && showHighlight) return 'border-amber-400 ring-2 ring-amber-400/50'
+    return 'border-stone-300'
+  }
 
   return (
     <div
@@ -205,7 +224,7 @@ function MinimalCard({ card, isDragging, isValidTarget, showHighlight, cardSize 
         w-full aspect-[2.5/3.5] rounded-md
         bg-white
         border
-        ${isValidTarget && showHighlight ? 'border-amber-400 ring-2 ring-amber-400/50' : 'border-stone-300'}
+        ${getBorderClass()}
         shadow-sm
         flex flex-col p-1.5 sm:p-2
         ${isDragging ? 'opacity-50 scale-105' : ''}
@@ -230,18 +249,18 @@ function MinimalCard({ card, isDragging, isValidTarget, showHighlight, cardSize 
   )
 }
 
-export function Card({ card, isDragging, isValidTarget, showHighlight, cardArt = 'classic', cardSize = 'large' }: CardProps) {
+export function Card({ card, isDragging, isValidTarget, showHighlight, isHinted, cardArt = 'classic', cardSize = 'large' }: CardProps) {
   if (!card.faceUp) {
     return <CardBack isDragging={isDragging} cardArt={cardArt} />
   }
 
   switch (cardArt) {
     case 'modern':
-      return <ModernCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
+      return <ModernCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} isHinted={isHinted} cardSize={cardSize} />
     case 'minimal':
-      return <MinimalCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
+      return <MinimalCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} isHinted={isHinted} cardSize={cardSize} />
     case 'classic':
     default:
-      return <ClassicCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} cardSize={cardSize} />
+      return <ClassicCard card={card} isDragging={isDragging} isValidTarget={isValidTarget} showHighlight={showHighlight} isHinted={isHinted} cardSize={cardSize} />
   }
 }

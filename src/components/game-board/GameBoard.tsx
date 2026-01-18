@@ -14,6 +14,7 @@ interface DragState {
 export function GameBoard({
   game,
   preferences,
+  activeHint,
   onMoveCards,
   onDeal,
 }: GameBoardProps) {
@@ -75,19 +76,28 @@ export function GameBoard({
 
       {/* Tableau - 10 columns */}
       <div className="flex-1 flex gap-1 sm:gap-2 md:gap-3 min-h-0">
-        {game.columns.map((column) => (
-          <Column
-            key={column.id}
-            column={column}
-            isValidTarget={isColumnValidTarget(column)}
-            showValidDropTargets={preferences.showValidDropTargets}
-            cardArt={preferences.cardArt}
-            cardSize={preferences.cardSize}
-            onCardDragStart={handleCardDragStart}
-            onCardDragEnd={handleCardDragEnd}
-            onDrop={handleDrop}
-          />
-        ))}
+        {game.columns.map((column) => {
+          const isHintSource = activeHint?.fromColumnId === column.id
+          const isHintTarget = activeHint?.toColumnId === column.id
+          const hintCardIndex = isHintSource ? activeHint?.cardIndex : undefined
+
+          return (
+            <Column
+              key={column.id}
+              column={column}
+              isValidTarget={isColumnValidTarget(column)}
+              showValidDropTargets={preferences.showValidDropTargets}
+              cardArt={preferences.cardArt}
+              cardSize={preferences.cardSize}
+              isHintSource={isHintSource}
+              isHintTarget={isHintTarget}
+              hintCardIndex={hintCardIndex}
+              onCardDragStart={handleCardDragStart}
+              onCardDragEnd={handleCardDragEnd}
+              onDrop={handleDrop}
+            />
+          )
+        })}
       </div>
 
       {/* Deal disabled hint */}

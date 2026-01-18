@@ -41,6 +41,12 @@ export interface Game {
   stock: Card[]
 }
 
+export interface Hint {
+  fromColumnId: string
+  cardIndex: number
+  toColumnId: string
+}
+
 // =============================================================================
 // User Preferences
 // =============================================================================
@@ -76,6 +82,7 @@ export interface GameBoardPreferences {
 export interface GameBoardProps {
   game: Game
   preferences: GameBoardPreferences
+  activeHint?: Hint | null
   onMoveCards?: (
     fromColumnId: string,
     cardIndex: number,

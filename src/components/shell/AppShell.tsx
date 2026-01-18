@@ -28,6 +28,7 @@ export interface AppShellProps {
   isNewGameOpen?: boolean
   onNewGame?: (difficulty: Difficulty) => void
   onUndo?: () => void
+  onHint?: () => void
   onDeal?: () => void
   onOpenSettings?: () => void
   onCloseSettings?: () => void
@@ -46,6 +47,7 @@ export function AppShell({
   isNewGameOpen: propIsNewGameOpen,
   onNewGame: propOnNewGame,
   onUndo = () => {},
+  onHint = () => {},
   onDeal = () => {},
   onOpenSettings: propOnOpenSettings,
   onCloseSettings: propOnCloseSettings,
@@ -80,6 +82,7 @@ export function AppShell({
           canDeal={canDeal}
           onNewGame={onOpenNewGame}
           onUndo={onUndo}
+          onHint={onHint}
           onDeal={onDeal}
           onOpenSettings={onOpenSettings}
         />
@@ -95,6 +98,7 @@ export function AppShell({
           canDeal={canDeal}
           onNewGame={onOpenNewGame}
           onUndo={onUndo}
+          onHint={onHint}
           onDeal={onDeal}
           onOpenSettings={onOpenSettings}
         />

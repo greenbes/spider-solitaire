@@ -1,9 +1,9 @@
 import { useReducer, useCallback, useState, useEffect } from 'react'
 import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
-import { gameReducer, initialGameState } from './game'
+import { gameReducer, initialGameState, getHint } from './game'
 import { usePreferences } from './hooks/usePreferences'
-import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme, CardSize } from './game/types'
+import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme, CardSize, Hint } from './game/types'
 import { getThemeStyles } from './game/themes'
 
 function App() {
@@ -11,6 +11,7 @@ function App() {
   const { preferences, updatePreferences } = usePreferences()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isNewGameOpen, setIsNewGameOpen] = useState(false)
+  const [activeHint, setActiveHint] = useState<Hint | null>(null)
 
   // Open new game modal on first load if no game started
   useEffect(() => {
@@ -22,6 +23,7 @@ function App() {
   const handleNewGame = useCallback((difficulty: Difficulty) => {
     dispatch({ type: 'NEW_GAME', payload: { difficulty } })
     setIsNewGameOpen(false)
+    setActiveHint(null)
   }, [])
 
   const handleMoveCards = useCallback(
@@ -30,17 +32,25 @@ function App() {
         type: 'MOVE_CARDS',
         payload: { fromColumnId, cardIndex, toColumnId },
       })
+      setActiveHint(null)
     },
     []
   )
 
   const handleDeal = useCallback(() => {
     dispatch({ type: 'DEAL' })
+    setActiveHint(null)
   }, [])
 
   const handleUndo = useCallback(() => {
     dispatch({ type: 'UNDO' })
+    setActiveHint(null)
   }, [])
+
+  const handleHint = useCallback(() => {
+    const hint = getHint(state.game)
+    setActiveHint(hint)
+  }, [state.game])
 
   const handleSuitCompleted = useCallback((_suit: Suit) => {
     // The reducer handles auto-completion in MOVE_CARDS
@@ -80,6 +90,7 @@ function App() {
       isNewGameOpen={isNewGameOpen}
       onNewGame={handleNewGame}
       onUndo={handleUndo}
+      onHint={handleHint}
       onDeal={handleDeal}
       onOpenSettings={() => setIsSettingsOpen(true)}
       onCloseSettings={() => setIsSettingsOpen(false)}
@@ -91,6 +102,7 @@ function App() {
         <GameBoard
           game={state.game}
           preferences={gameBoardPreferences}
+          activeHint={activeHint}
           onMoveCards={handleMoveCards}
           onDeal={handleDeal}
           onSuitCompleted={handleSuitCompleted}

@@ -1,4 +1,4 @@
-import { Plus, Undo2, Layers, Settings } from 'lucide-react'
+import { Plus, Undo2, Lightbulb, Layers, Settings } from 'lucide-react'
 import type { GameStats } from '../../game/types'
 
 export interface GameToolbarProps {
@@ -8,6 +8,7 @@ export interface GameToolbarProps {
   canDeal: boolean
   onNewGame: () => void
   onUndo: () => void
+  onHint: () => void
   onDeal: () => void
   onOpenSettings: () => void
 }
@@ -19,6 +20,7 @@ export function GameToolbar({
   canDeal,
   onNewGame,
   onUndo,
+  onHint,
   onDeal,
   onOpenSettings,
 }: GameToolbarProps) {
@@ -53,6 +55,14 @@ export function GameToolbar({
       </div>
 
       <div className="flex items-center gap-4 sm:gap-6">
+        <button
+          onClick={onHint}
+          className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+        >
+          <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="hidden sm:inline">Hint</span>
+        </button>
+
         {showStatistics && (
           <div className="flex items-center gap-4 sm:gap-6 text-stone-300 text-sm sm:text-base font-mono">
             <div className="flex items-center gap-2">

@@ -16,6 +16,9 @@ export { dealInitialCards, dealFromStock } from './deal'
 // Move functions
 export { isValidMove, canMoveSameSequence, moveCards, flipTopCard } from './moves'
 
+// Hint functions
+export { getHint, hasValidMoves } from './hints'
+
 // Completion functions
 export { detectCompletedSuit, removeCompletedSuit, isWinCondition } from './completion'
 
