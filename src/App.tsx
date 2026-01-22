@@ -101,6 +101,7 @@ function App() {
       canDeal={canDeal}
       isSettingsOpen={isSettingsOpen}
       isNewGameOpen={isNewGameOpen}
+      gameInProgress={state.gameStarted}
       onNewGame={handleNewGame}
       onUndo={handleUndo}
       onHint={handleHint}

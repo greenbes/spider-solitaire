@@ -161,6 +161,60 @@
       "createdAt": "2026-01-18",
       "completedAt": "2026-01-18",
       "dependencies": []
+    },
+    {
+      "id": 6,
+      "title": "Update New Game dialog defaults and closability",
+      "type": "ui",
+      "priority": "medium",
+      "complexity": "low-medium",
+      "status": "completed",
+      "description": "Change the New Game dialog so that 2 Suits is the default difficulty instead of 4 Suits. Prevent users from closing the dialog (via X button, Cancel button, or backdrop click) unless a game is already in progress.",
+      "subtasks": [
+        {
+          "id": "6.1",
+          "title": "Change default difficulty to 2 Suits",
+          "status": "completed",
+          "file": "src/components/shell/NewGameModal.tsx",
+          "details": "Update useState default from 4 to 2. Move 'Default' badge from 4 Suits option to 2 Suits option."
+        },
+        {
+          "id": "6.2",
+          "title": "Add gameInProgress prop to NewGameModal",
+          "status": "completed",
+          "file": "src/components/shell/NewGameModal.tsx",
+          "details": "Add optional gameInProgress prop to interface. Compute canClose based on gameInProgress."
+        },
+        {
+          "id": "6.3",
+          "title": "Conditionally render close controls",
+          "status": "completed",
+          "file": "src/components/shell/NewGameModal.tsx",
+          "details": "Only show X button and Cancel button when canClose is true. Only allow backdrop click to close when canClose is true."
+        },
+        {
+          "id": "6.4",
+          "title": "Thread gameInProgress through component tree",
+          "status": "completed",
+          "file": "src/components/shell/AppShell.tsx",
+          "details": "Add gameInProgress prop to AppShellProps. Pass it through to NewGameModal."
+        },
+        {
+          "id": "6.5",
+          "title": "Pass gameStarted state from App",
+          "status": "completed",
+          "file": "src/App.tsx",
+          "details": "Pass state.gameStarted as gameInProgress prop to AppShell."
+        }
+      ],
+      "relatedFiles": [
+        "src/components/shell/NewGameModal.tsx",
+        "src/components/shell/AppShell.tsx",
+        "src/App.tsx"
+      ],
+      "createdAt": "2026-01-18",
+      "completedAt": "2026-01-18",
+      "dependencies": []
     }
   ]
 }

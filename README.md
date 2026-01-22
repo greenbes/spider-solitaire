@@ -41,9 +41,9 @@ npm run test:run # Run tests once
 
 | Status | Count | Progress |
 |--------|-------|----------|
-| Completed | 5 | ████████████████████████████████████████ 100% |
+| Completed | 6 | ████████████████████████████████████████ 100% |
 | Pending | 0 | |
-| **Total** | **5** | |
+| **Total** | **6** | |
 
 ---
 
@@ -67,6 +67,10 @@ npm run test:run # Run tests once
 
 - [x] **#5** Create justfile with S3 deploy action
   - Type: devops | Priority: medium | Complexity: low
+  - Completed: 2026-01-18
+
+- [x] **#6** Update New Game dialog defaults and closability
+  - Type: ui | Priority: medium | Complexity: low-medium
   - Completed: 2026-01-18
 
 ---

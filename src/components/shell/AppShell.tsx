@@ -26,6 +26,7 @@ export interface AppShellProps {
   canDeal?: boolean
   isSettingsOpen?: boolean
   isNewGameOpen?: boolean
+  gameInProgress?: boolean
   onNewGame?: (difficulty: Difficulty) => void
   onUndo?: () => void
   onHint?: () => void
@@ -45,6 +46,7 @@ export function AppShell({
   canDeal = true,
   isSettingsOpen: propIsSettingsOpen,
   isNewGameOpen: propIsNewGameOpen,
+  gameInProgress = false,
   onNewGame: propOnNewGame,
   onUndo = () => {},
   onHint = () => {},
@@ -108,6 +110,7 @@ export function AppShell({
         isOpen={isNewGameOpen}
         onClose={onCloseNewGame}
         onStartGame={onNewGame}
+        gameInProgress={gameInProgress}
       />
 
       <SettingsModal

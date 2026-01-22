@@ -6,6 +6,7 @@ export interface NewGameModalProps {
   isOpen: boolean
   onClose: () => void
   onStartGame: (difficulty: Difficulty) => void
+  gameInProgress?: boolean
 }
 
 const DIFFICULTY_OPTIONS: { value: Difficulty; label: string; description: string }[] = [
@@ -26,8 +27,9 @@ const DIFFICULTY_OPTIONS: { value: Difficulty; label: string; description: strin
   },
 ]
 
-export function NewGameModal({ isOpen, onClose, onStartGame }: NewGameModalProps) {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(4)
+export function NewGameModal({ isOpen, onClose, onStartGame, gameInProgress = false }: NewGameModalProps) {
+  const canClose = gameInProgress
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(2)
 
   if (!isOpen) return null
 
@@ -39,7 +41,7 @@ export function NewGameModal({ isOpen, onClose, onStartGame }: NewGameModalProps
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onClick={onClose}
+      onClick={canClose ? onClose : undefined}
     >
       <div
         className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-md mx-4 font-['DM_Sans']"
@@ -47,13 +49,15 @@ export function NewGameModal({ isOpen, onClose, onStartGame }: NewGameModalProps
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-700">
           <h2 className="text-xl font-semibold text-white">New Game</h2>
-          <button
-            onClick={onClose}
-            className="p-1 text-stone-400 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          {canClose && (
+            <button
+              onClick={onClose}
+              className="p-1 text-stone-400 hover:text-white transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          )}
         </div>
 
         <div className="px-6 py-5 space-y-4">
@@ -97,7 +101,7 @@ export function NewGameModal({ isOpen, onClose, onStartGame }: NewGameModalProps
                   >
                     {option.label}
                   </span>
-                  {option.value === 4 && (
+                  {option.value === 2 && (
                     <span className="ml-auto text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">
                       Default
                     </span>
@@ -118,12 +122,14 @@ export function NewGameModal({ isOpen, onClose, onStartGame }: NewGameModalProps
         </div>
 
         <div className="px-6 py-4 border-t border-stone-700 flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-stone-700 hover:bg-stone-600 text-white rounded-lg font-medium transition-colors"
-          >
-            Cancel
-          </button>
+          {canClose && (
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 bg-stone-700 hover:bg-stone-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+          )}
           <button
             onClick={handleStartGame}
             className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
