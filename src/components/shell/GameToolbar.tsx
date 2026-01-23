@@ -1,4 +1,4 @@
-import { Plus, Undo2, Lightbulb, Layers, Settings } from 'lucide-react'
+import { Plus, Undo2, Lightbulb, Layers, HelpCircle, Settings } from 'lucide-react'
 import type { GameStats } from '../../game/types'
 
 export interface GameToolbarProps {
@@ -10,6 +10,7 @@ export interface GameToolbarProps {
   onUndo: () => void
   onHint: () => void
   onDeal: () => void
+  onHelp: () => void
   onOpenSettings: () => void
 }
 
@@ -22,6 +23,7 @@ export function GameToolbar({
   onUndo,
   onHint,
   onDeal,
+  onHelp,
   onOpenSettings,
 }: GameToolbarProps) {
   return (
@@ -77,6 +79,14 @@ export function GameToolbar({
             </div>
           </div>
         )}
+
+        <button
+          onClick={onHelp}
+          className="p-2 sm:p-2.5 bg-stone-700 hover:bg-stone-600 text-white rounded-lg transition-colors"
+          aria-label="Help"
+        >
+          <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+        </button>
 
         <button
           onClick={onOpenSettings}

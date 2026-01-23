@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { GameToolbar } from './GameToolbar'
 import { SettingsModal } from './SettingsModal'
 import { NewGameModal } from './NewGameModal'
+import { HelpModal } from './HelpModal'
 import type { Difficulty, UserPreferences, GameStats } from '../../game/types'
 
 const defaultStats: GameStats = {
@@ -61,6 +62,7 @@ export function AppShell({
   const [internalPreferences, setInternalPreferences] = useState(defaultPreferences)
   const [internalSettingsOpen, setInternalSettingsOpen] = useState(false)
   const [internalNewGameOpen, setInternalNewGameOpen] = useState(false)
+  const [isHelpOpen, setIsHelpOpen] = useState(false)
 
   const preferences = propPreferences ?? internalPreferences
   const isSettingsOpen = propIsSettingsOpen ?? internalSettingsOpen
@@ -86,6 +88,7 @@ export function AppShell({
           onUndo={onUndo}
           onHint={onHint}
           onDeal={onDeal}
+          onHelp={() => setIsHelpOpen(true)}
           onOpenSettings={onOpenSettings}
         />
       )}
@@ -102,6 +105,7 @@ export function AppShell({
           onUndo={onUndo}
           onHint={onHint}
           onDeal={onDeal}
+          onHelp={() => setIsHelpOpen(true)}
           onOpenSettings={onOpenSettings}
         />
       )}
@@ -118,6 +122,11 @@ export function AppShell({
         preferences={preferences}
         onClose={onCloseSettings}
         onPreferencesChange={onPreferencesChange}
+      />
+
+      <HelpModal
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
       />
     </div>
   )
