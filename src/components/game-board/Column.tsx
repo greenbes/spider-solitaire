@@ -52,6 +52,7 @@ export function Column({
       {isEmpty && (
         <div
           className={`
+            empty-slot
             absolute inset-0 rounded-lg
             border-2 border-dashed
             ${isHintTarget

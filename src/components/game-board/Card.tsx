@@ -66,6 +66,7 @@ function CardBack({ isDragging, cardArt }: { isDragging?: boolean; cardArt: Card
     return (
       <div
         className={`
+          card-back
           w-full aspect-[2.5/3.5] rounded-lg
           bg-emerald-800
           border border-emerald-700
@@ -80,6 +81,7 @@ function CardBack({ isDragging, cardArt }: { isDragging?: boolean; cardArt: Card
     return (
       <div
         className={`
+          card-back
           w-full aspect-[2.5/3.5] rounded-xl
           bg-gradient-to-br from-emerald-600 to-emerald-800
           border border-emerald-500/50
@@ -99,6 +101,7 @@ function CardBack({ isDragging, cardArt }: { isDragging?: boolean; cardArt: Card
   return (
     <div
       className={`
+        card-back
         w-full aspect-[2.5/3.5] rounded-lg
         bg-gradient-to-br from-emerald-700 to-emerald-900
         border-2 border-emerald-600
@@ -129,6 +132,7 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, isHinted,
   return (
     <div
       className={`
+        card-face
         w-full aspect-[2.5/3.5] rounded-lg
         bg-white dark:bg-stone-100
         border-2
@@ -175,6 +179,7 @@ function ModernCard({ card, isDragging, isValidTarget, showHighlight, isHinted, 
   return (
     <div
       className={`
+        card-face
         w-full aspect-[2.5/3.5] rounded-xl
         ${bgClass}
         border
@@ -221,6 +226,7 @@ function MinimalCard({ card, isDragging, isValidTarget, showHighlight, isHinted,
   return (
     <div
       className={`
+        card-face
         w-full aspect-[2.5/3.5] rounded-md
         bg-white
         border

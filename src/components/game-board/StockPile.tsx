@@ -49,8 +49,8 @@ export function StockPile({ dealsRemaining, canDeal, onDeal, theme }: StockPileP
       className={`
         relative w-16 sm:w-20 md:w-24 aspect-[2.5/3.5] rounded-lg
         ${isEmpty
-          ? `border-2 border-dashed ${themeStyles.emptySlotBorder} ${themeStyles.emptySlotBg}`
-          : `${pileStyles.gradient} border-2 shadow-lg hover:shadow-xl hover:scale-105`
+          ? `empty-slot border-2 border-dashed ${themeStyles.emptySlotBorder} ${themeStyles.emptySlotBg}`
+          : `card-back ${pileStyles.gradient} border-2 shadow-lg hover:shadow-xl hover:scale-105`
         }
         transition-all duration-200
         disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-lg

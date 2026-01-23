@@ -31,7 +31,7 @@ export function FoundationArea({ foundationsCompleted, showCelebration, theme }:
               w-3 h-4 sm:w-4 sm:h-5 rounded-sm
               ${completed
                 ? 'bg-amber-500 shadow-sm shadow-amber-500/50'
-                : `${themeStyles.emptySlotBg} border ${themeStyles.emptySlotBorder}`
+                : `empty-slot ${themeStyles.emptySlotBg} border ${themeStyles.emptySlotBorder}`
               }
               ${completed && showCelebration ? 'animate-pulse' : ''}
               transition-colors duration-300

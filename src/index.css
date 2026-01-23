@@ -35,3 +35,35 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/*
+ * Forced Colors Mode (High Contrast) Support
+ *
+ * When users enable high contrast / forced colors mode, browsers override
+ * CSS colors with system colors. This breaks card games where suit colors
+ * (black vs red) are essential for gameplay.
+ *
+ * We use forced-color-adjust: none on card faces to preserve the intended
+ * colors while keeping the rest of the UI accessible.
+ */
+@media (forced-colors: active) {
+  /* Preserve card face colors - suit colors are essential for gameplay */
+  .card-face {
+    forced-color-adjust: none;
+  }
+
+  /* Ensure card backs remain visible with a border */
+  .card-back {
+    border: 2px solid CanvasText !important;
+  }
+
+  /* Ensure empty slots are visible */
+  .empty-slot {
+    border: 2px dashed CanvasText !important;
+  }
+
+  /* Ensure buttons and interactive elements remain accessible */
+  button {
+    border: 1px solid ButtonText;
+  }
+}
