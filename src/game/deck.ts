@@ -40,15 +40,19 @@ export function createDeck(difficulty: Difficulty): Card[] {
   return cards
 }
 
+const SHUFFLE_PASSES = 3
+
 /**
- * Fisher-Yates shuffle algorithm
+ * Fisher-Yates shuffle algorithm with multiple passes
  * Returns a new shuffled array without mutating the original
  */
 export function shuffleDeck(deck: Card[]): Card[] {
   const shuffled = [...deck]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  for (let pass = 0; pass < SHUFFLE_PASSES; pass++) {
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
   }
   return shuffled
 }
