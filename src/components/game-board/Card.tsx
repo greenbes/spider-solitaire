@@ -46,10 +46,10 @@ const SUIT_SYMBOLS: Record<Suit, string> = {
 }
 
 const SUIT_COLORS: Record<Suit, string> = {
-  spades: 'text-black',
-  hearts: 'text-red-600',
-  diamonds: 'text-red-600',
-  clubs: 'text-black',
+  spades: 'text-[#000000]',
+  hearts: 'text-[#dc2626]',
+  diamonds: 'text-[#dc2626]',
+  clubs: 'text-[#000000]',
 }
 
 // Modern style uses colored backgrounds for suits

@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import packageJson from './package.json'
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -39,12 +43,27 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Don't precache HTML - always fetch from network to get latest version
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
         // Force new service worker to take control immediately
-        // This ensures CSS fixes are applied without requiring tab close
         skipWaiting: true,
         clientsClaim: true,
+        // Clean up old caches from previous versions
+        cleanupOutdatedCaches: true,
+        // Use NetworkFirst for navigation requests (HTML pages)
+        navigateFallback: null,
         runtimeCaching: [
+          {
+            // Navigation requests (page loads) - always try network first
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              expiration: {
+                maxAgeSeconds: 60 * 60 // 1 hour max
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',

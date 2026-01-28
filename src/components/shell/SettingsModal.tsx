@@ -196,6 +196,9 @@ export function SettingsModal({
           >
             Done
           </button>
+          <p className="mt-3 text-center text-xs text-stone-500 font-['IBM_Plex_Mono']">
+            Version {__APP_VERSION__}
+          </p>
         </div>
       </div>
     </div>
