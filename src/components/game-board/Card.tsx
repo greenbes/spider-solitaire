@@ -126,7 +126,7 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, isHinted,
   const getBorderClass = () => {
     if (isHinted) return 'border-amber-400 ring-2 ring-amber-400/60 animate-pulse'
     if (isValidTarget && showHighlight) return 'border-amber-400 ring-2 ring-amber-400/50'
-    return 'border-stone-300 dark:border-stone-400'
+    return 'border-stone-300'
   }
 
   return (
@@ -134,7 +134,7 @@ function ClassicCard({ card, isDragging, isValidTarget, showHighlight, isHinted,
       className={`
         card-face
         w-full aspect-[2.5/3.5] rounded-lg
-        bg-white dark:bg-stone-100
+        bg-white
         border-2
         ${getBorderClass()}
         shadow-md
