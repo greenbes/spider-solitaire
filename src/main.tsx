@@ -3,16 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
 
-// App version - increment this to force cache clear on deployment
-const APP_VERSION = '2.0.0'
 const VERSION_KEY = 'spider-solitaire-version'
 
 // Force service worker update and clear caches if version changed
 async function forceUpdateIfNeeded() {
   const storedVersion = localStorage.getItem(VERSION_KEY)
 
-  if (storedVersion !== APP_VERSION) {
-    console.log(`Version changed from ${storedVersion} to ${APP_VERSION}, clearing caches...`)
+  if (storedVersion !== __APP_VERSION__) {
+    console.log(`Version changed from ${storedVersion} to ${__APP_VERSION__}, clearing caches...`)
 
     // Clear all caches
     if ('caches' in window) {
@@ -29,7 +27,7 @@ async function forceUpdateIfNeeded() {
     }
 
     // Store new version
-    localStorage.setItem(VERSION_KEY, APP_VERSION)
+    localStorage.setItem(VERSION_KEY, __APP_VERSION__)
 
     // Reload to get fresh assets
     if (storedVersion !== null) {

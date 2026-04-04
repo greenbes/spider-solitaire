@@ -2,7 +2,7 @@
 default:
   @just --list --justfile {{justfile()}}
 
-# Deploy built application to S3
+# Build and deploy application to S3
 deploy:
   #!/usr/bin/env bash
   set -euo pipefail
@@ -10,6 +10,8 @@ deploy:
     echo "Error: S3_BUCKET environment variable is not set"
     exit 1
   fi
+  echo "Building..."
+  npm run build
   echo "Deploying to s3://${S3_BUCKET}..."
   aws s3 sync dist/ "s3://${S3_BUCKET}/" --delete
   aws s3 cp errors.html "s3://${S3_BUCKET}/errors.html"
