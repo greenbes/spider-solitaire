@@ -203,6 +203,51 @@ describe('Column component', () => {
     })
   })
 
+  describe('accessibility attributes', () => {
+    it('exposes draggable cards as button role with label', () => {
+      const column = createColumn([
+        createFaceUpCard('spades', '5'),
+      ], 'test-col')
+
+      render(<Column column={column} />)
+
+      const buttons = screen.getAllByRole('button')
+      expect(buttons.length).toBe(1)
+      expect(buttons[0].getAttribute('aria-label')).toContain('5 of spades')
+      expect(buttons[0].getAttribute('aria-label')).toContain('draggable')
+    })
+
+    it('face-down cards are not buttons (not draggable)', () => {
+      const column = createColumn([
+        createFaceDownCard('spades', 'K'),
+      ], 'test-col')
+
+      render(<Column column={column} />)
+
+      expect(screen.queryAllByRole('button')).toHaveLength(0)
+    })
+
+    it('draggable cards are keyboard-focusable', () => {
+      const column = createColumn([
+        createFaceUpCard('spades', '5'),
+      ], 'test-col')
+
+      render(<Column column={column} />)
+
+      const button = screen.getByRole('button')
+      expect(button.getAttribute('tabindex')).toBe('0')
+    })
+
+    it('empty column exposes appropriate label when hint target', () => {
+      const column = createColumn([], 'test-col')
+
+      render(<Column column={column} isHintTarget={true} />)
+
+      const region = screen.getByLabelText(/suggested move target/i)
+      expect(region).toBeTruthy()
+    })
+  })
+
   describe('card art and size props', () => {
     it('passes cardArt prop to child cards', () => {
       const column = createColumn([

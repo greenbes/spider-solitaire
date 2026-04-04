@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GameToolbar } from './GameToolbar'
 import { SettingsModal } from './SettingsModal'
 import { NewGameModal } from './NewGameModal'
@@ -75,6 +75,30 @@ export function AppShell({
   const onNewGame = propOnNewGame ?? ((difficulty: Difficulty) => console.log('Start new game with difficulty:', difficulty))
 
   const isTop = preferences.toolbarPosition === 'top'
+
+  // Global "?" shortcut opens the Help modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== '?') return
+      // Ignore when typing in an editable field
+      const target = e.target as HTMLElement | null
+      if (target) {
+        const tag = target.tagName
+        if (
+          tag === 'INPUT' ||
+          tag === 'TEXTAREA' ||
+          tag === 'SELECT' ||
+          target.isContentEditable
+        ) {
+          return
+        }
+      }
+      e.preventDefault()
+      setIsHelpOpen((open) => !open)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   return (
     <div className="h-screen w-screen flex flex-col bg-stone-900 font-['DM_Sans']">

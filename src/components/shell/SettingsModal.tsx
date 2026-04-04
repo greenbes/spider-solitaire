@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
-import type { UserPreferences } from '../../game/types'
+import type { UserPreferences, CardArt, Theme } from '../../game/types'
+import { useModalA11y } from '../../hooks/useModalA11y'
 
 export interface SettingsModalProps {
   isOpen: boolean
@@ -33,6 +34,8 @@ export function SettingsModal({
   onClose,
   onPreferencesChange,
 }: SettingsModalProps) {
+  const containerRef = useModalA11y({ isOpen, onClose })
+
   if (!isOpen) return null
 
   const handleChange = <K extends keyof UserPreferences>(
@@ -46,13 +49,17 @@ export function SettingsModal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-title"
     >
       <div
+        ref={containerRef}
         className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-md mx-4 font-['DM_Sans']"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-700">
-          <h2 className="text-xl font-semibold text-white">Settings</h2>
+          <h2 id="settings-title" className="text-xl font-semibold text-white">Settings</h2>
           <button
             onClick={onClose}
             className="p-1 text-stone-400 hover:text-white transition-colors"
@@ -111,7 +118,7 @@ export function SettingsModal({
             </label>
             <select
               value={preferences.cardArt}
-              onChange={(e) => handleChange('cardArt', e.target.value)}
+              onChange={(e) => handleChange('cardArt', e.target.value as CardArt)}
               className="w-full px-4 py-2.5 bg-stone-700 text-white rounded-lg border border-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {CARD_ARTS.map((art) => (
@@ -129,7 +136,7 @@ export function SettingsModal({
             </label>
             <select
               value={preferences.theme}
-              onChange={(e) => handleChange('theme', e.target.value)}
+              onChange={(e) => handleChange('theme', e.target.value as Theme)}
               className="w-full px-4 py-2.5 bg-stone-700 text-white rounded-lg border border-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {THEMES.map((theme) => (

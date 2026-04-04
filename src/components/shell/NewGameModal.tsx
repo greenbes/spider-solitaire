@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, Spade } from 'lucide-react'
 import type { Difficulty } from '../../game/types'
+import { useModalA11y } from '../../hooks/useModalA11y'
 
 export interface NewGameModalProps {
   isOpen: boolean
@@ -30,6 +31,11 @@ const DIFFICULTY_OPTIONS: { value: Difficulty; label: string; description: strin
 export function NewGameModal({ isOpen, onClose, onStartGame, gameInProgress = false }: NewGameModalProps) {
   const canClose = gameInProgress
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(2)
+  const containerRef = useModalA11y({
+    isOpen,
+    onClose: canClose ? onClose : undefined,
+    closeOnEscape: canClose,
+  })
 
   if (!isOpen) return null
 
@@ -42,13 +48,17 @@ export function NewGameModal({ isOpen, onClose, onStartGame, gameInProgress = fa
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={canClose ? onClose : undefined}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-game-title"
     >
       <div
+        ref={containerRef}
         className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-md mx-4 font-['DM_Sans']"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-700">
-          <h2 className="text-xl font-semibold text-white">New Game</h2>
+          <h2 id="new-game-title" className="text-xl font-semibold text-white">New Game</h2>
           {canClose && (
             <button
               onClick={onClose}

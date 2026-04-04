@@ -1,13 +1,66 @@
-import { useReducer, useCallback, useState, useEffect } from 'react'
+import { useReducer, useCallback, useMemo, useState, useEffect } from 'react'
 import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
-import { gameReducer, initialGameState, getHint } from './game'
+import { gameReducer, initialGameState, getHint, hasValidMoves } from './game'
+import { HINT_TOTAL_DURATION_MS } from './game/constants'
 import { usePreferences } from './hooks/usePreferences'
-import type { Difficulty, Suit, GameBoardPreferences, CardArt, Theme, CardSize, Hint } from './game/types'
+import { useGamePersistence, loadPersistedGameState } from './hooks/useGamePersistence'
+import { useModalA11y } from './hooks/useModalA11y'
+import type { Difficulty, Suit, GameBoardPreferences, Hint } from './game/types'
 import { getThemeStyles } from './game/themes'
 
+interface EndGameModalProps {
+  isOpen: boolean
+  title: string
+  titleId: string
+  icon: string
+  children: React.ReactNode
+  onClose?: () => void
+  actions: React.ReactNode
+  closeOnEscape?: boolean
+}
+
+function EndGameModal({
+  isOpen,
+  title,
+  titleId,
+  icon,
+  children,
+  onClose,
+  actions,
+  closeOnEscape = true,
+}: EndGameModalProps) {
+  const containerRef = useModalA11y({ isOpen, onClose, closeOnEscape })
+  if (!isOpen) return null
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
+      <div
+        ref={containerRef}
+        className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-md mx-4 p-8 text-center"
+      >
+        <div className="text-6xl mb-4">{icon}</div>
+        <h2 id={titleId} className="text-2xl font-bold text-white mb-2">
+          {title}
+        </h2>
+        <div className="text-stone-300 mb-6">{children}</div>
+        <div className="flex gap-3">{actions}</div>
+      </div>
+    </div>
+  )
+}
+
 function App() {
-  const [state, dispatch] = useReducer(gameReducer, initialGameState)
+  const [state, dispatch] = useReducer(
+    gameReducer,
+    initialGameState,
+    (initial) => loadPersistedGameState() ?? initial
+  )
+  useGamePersistence(state)
   const { preferences, updatePreferences } = usePreferences()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isNewGameOpen, setIsNewGameOpen] = useState(false)
@@ -20,15 +73,13 @@ function App() {
     }
   }, [state.gameStarted])
 
-  // Auto-dismiss hint after 10 flashes (animate-pulse is 2s per cycle)
+  // Auto-dismiss hint after HINT_FLASH_COUNT × HINT_PULSE_DURATION_MS
   useEffect(() => {
     if (!activeHint) return
 
-    const FLASH_COUNT = 10
-    const PULSE_DURATION_MS = 2000 // Tailwind animate-pulse duration
     const timeout = setTimeout(() => {
       setActiveHint(null)
-    }, FLASH_COUNT * PULSE_DURATION_MS)
+    }, HINT_TOTAL_DURATION_MS)
 
     return () => clearTimeout(timeout)
   }, [activeHint])
@@ -58,12 +109,13 @@ function App() {
   const handleUndo = useCallback(() => {
     dispatch({ type: 'UNDO' })
     setActiveHint(null)
+    setStuckDismissed(false)
   }, [])
 
+  const cachedHint = useMemo(() => getHint(state.game), [state.game])
   const handleHint = useCallback(() => {
-    const hint = getHint(state.game)
-    setActiveHint(hint)
-  }, [state.game])
+    setActiveHint(cachedHint)
+  }, [cachedHint])
 
   const handleSuitCompleted = useCallback((_suit: Suit) => {
     // The reducer handles auto-completion in MOVE_CARDS
@@ -78,16 +130,28 @@ function App() {
   const canDeal = state.game.dealsRemaining > 0 && !hasEmptyColumn
   const canUndo = state.history.length > 0
 
-  const theme = (preferences.theme as Theme) || 'green-felt'
-  const themeStyles = getThemeStyles(theme)
+  // Game-over detection: no valid moves and no deals remaining
+  const isStuck = useMemo(() => {
+    if (!state.gameStarted || state.isWon) return false
+    if (canDeal) return false
+    return !hasValidMoves(state.game)
+  }, [state.gameStarted, state.isWon, state.game, canDeal])
+
+  const [stuckDismissed, setStuckDismissed] = useState(false)
+  useEffect(() => {
+    // Reset the dismissed flag when the stuck condition clears
+    if (!isStuck) setStuckDismissed(false)
+  }, [isStuck])
+
+  const themeStyles = getThemeStyles(preferences.theme)
 
   const gameBoardPreferences: GameBoardPreferences = {
     showValidDropTargets: true,
     autoMoveCompletedSuits: true,
     showCelebration: true,
-    cardArt: (preferences.cardArt as CardArt) || 'classic',
-    theme,
-    cardSize: (preferences.cardSize as CardSize) || 'large',
+    cardArt: preferences.cardArt,
+    theme: preferences.theme,
+    cardSize: preferences.cardSize,
   }
 
   return (
@@ -128,32 +192,62 @@ function App() {
         </div>
       )}
 
-      {/* Win Modal */}
-      {state.isWon && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-          onClick={() => setIsNewGameOpen(true)}
-        >
-          <div
-            className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-md mx-4 p-8 text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Congratulations!
-            </h2>
-            <p className="text-stone-300 mb-6">
-              You won in {state.game.moves} moves!
-            </p>
+      {/* No-moves Modal */}
+      <EndGameModal
+        isOpen={isStuck && !stuckDismissed}
+        title="No Moves Remaining"
+        titleId="stuck-title"
+        icon="🛑"
+        onClose={() => setStuckDismissed(true)}
+        actions={
+          <>
+            <button
+              onClick={() => setStuckDismissed(true)}
+              className="flex-1 px-4 py-2.5 bg-stone-700 hover:bg-stone-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Dismiss
+            </button>
+            {canUndo && (
+              <button
+                onClick={handleUndo}
+                className="flex-1 px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-medium transition-colors"
+              >
+                Undo
+              </button>
+            )}
             <button
               onClick={() => setIsNewGameOpen(true)}
-              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
             >
-              Play Again
+              New Game
             </button>
-          </div>
-        </div>
-      )}
+          </>
+        }
+      >
+        <p>
+          You've run out of valid moves and deals. You can undo to try a
+          different path, or start a new game.
+        </p>
+      </EndGameModal>
+
+      {/* Win Modal */}
+      <EndGameModal
+        isOpen={state.isWon}
+        title="Congratulations!"
+        titleId="win-title"
+        icon="🎉"
+        closeOnEscape={false}
+        actions={
+          <button
+            onClick={() => setIsNewGameOpen(true)}
+            className="flex-1 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
+          >
+            Play Again
+          </button>
+        }
+      >
+        <p>You won in {state.game.moves} moves!</p>
+      </EndGameModal>
     </AppShell>
   )
 }

@@ -308,7 +308,7 @@ describe('moveCards', () => {
       expect(result.columns[1].cards).toHaveLength(1)
     })
 
-    it('increments move counter', () => {
+    it('does not modify the move counter (reducer handles it)', () => {
       const game = createGameWithColumns([
         [createFaceUpCard('spades', '5')],
         [createFaceUpCard('hearts', '6')],
@@ -317,7 +317,7 @@ describe('moveCards', () => {
 
       const result = moveCards(game, 'col-0', 0, 'col-1')
 
-      expect(result.moves).toBe(6)
+      expect(result.moves).toBe(5)
     })
 
     it('preserves other columns unchanged', () => {

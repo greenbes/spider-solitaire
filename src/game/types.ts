@@ -48,19 +48,6 @@ export interface Hint {
 }
 
 // =============================================================================
-// User Preferences
-// =============================================================================
-
-export interface UserPreferences {
-  toolbarPosition: 'top' | 'bottom'
-  showStatistics: boolean
-  cardSize: 'small' | 'medium' | 'large'
-  highContrast: boolean
-  cardArt: string
-  theme: string
-}
-
-// =============================================================================
 // Game Board Props
 // =============================================================================
 
@@ -69,6 +56,21 @@ export type CardArt = 'classic' | 'modern' | 'minimal'
 export type Theme = 'green-felt' | 'blue-felt' | 'wood' | 'dark'
 
 export type CardSize = 'small' | 'medium' | 'large'
+
+// =============================================================================
+// User Preferences
+// =============================================================================
+
+export type ToolbarPosition = 'top' | 'bottom'
+
+export interface UserPreferences {
+  toolbarPosition: ToolbarPosition
+  showStatistics: boolean
+  cardSize: CardSize
+  highContrast: boolean
+  cardArt: CardArt
+  theme: Theme
+}
 
 export interface GameBoardPreferences {
   showValidDropTargets: boolean

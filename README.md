@@ -6,12 +6,25 @@ A full-screen, two-deck Spider Solitaire PWA for ChromeBox. Local-only browser a
 
 - Classic Spider Solitaire gameplay with 1, 2, or 4 suit difficulty
 - Drag-and-drop card movement
+- Full keyboard navigation (arrow keys, Enter, Escape)
 - Undo support with full history
 - Hint system with visual card highlighting
+- Game state persisted to localStorage — refresh-safe
+- Automatic "no moves remaining" detection
 - Multiple card art styles (Classic, Modern, Minimal)
 - Theme support (Green Felt, Blue Felt, Wood, Dark)
 - Adjustable card sizes
+- Accessible modals with focus trapping and ESC-to-close
 - PWA support for offline play
+
+## Keyboard Controls
+
+| Key | Action |
+|-----|--------|
+| Arrow keys | Navigate between cards and columns |
+| Enter / Space | Pick up card, or place it on the focused column |
+| Escape | Cancel a selection or close a dialog |
+| ? | Toggle the Help dialog |
 
 ## Development
 

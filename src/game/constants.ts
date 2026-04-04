@@ -25,3 +25,8 @@ export const CARDS_IN_DECK = 104 // 2 decks
 export const COMPLETE_SUIT_LENGTH = 13
 export const INITIAL_DEALS = 5
 export const CARDS_PER_DEAL = 10
+
+// Hint flashing duration (matches Tailwind animate-pulse cycle: 2s)
+export const HINT_PULSE_DURATION_MS = 2000
+export const HINT_FLASH_COUNT = 10
+export const HINT_TOTAL_DURATION_MS = HINT_PULSE_DURATION_MS * HINT_FLASH_COUNT

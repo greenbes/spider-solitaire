@@ -301,6 +301,110 @@ describe('GameBoard component', () => {
     })
   })
 
+  describe('keyboard navigation', () => {
+    function createKeyboardGame(): Game {
+      const columnCards = [
+        [createFaceUpCard('spades', '5')],
+        [createFaceUpCard('hearts', '6')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+      ]
+      return createGameWithColumns(columnCards)
+    }
+
+    it('board is focusable via keyboard (tabindex=0)', () => {
+      const game = createKeyboardGame()
+      const preferences = createDefaultPreferences()
+
+      render(<GameBoard game={game} preferences={preferences} />)
+
+      const app = screen.getByRole('application')
+      expect(app.getAttribute('tabindex')).toBe('0')
+    })
+
+    it('first key press initializes keyboard focus', () => {
+      const game = createKeyboardGame()
+      const preferences = createDefaultPreferences()
+
+      const { container } = render(<GameBoard game={game} preferences={preferences} />)
+
+      const app = container.querySelector('[role="application"]')!
+      fireEvent.keyDown(app, { key: 'ArrowRight' })
+
+      // After initializing focus, there should be a focused card (has ring-blue-400)
+      expect(container.querySelector('.ring-blue-400')).toBeTruthy()
+    })
+
+    it('Enter picks up a card, then Enter drops on target column', () => {
+      const onMoveCards = vi.fn()
+      const game = createKeyboardGame()
+      const preferences = createDefaultPreferences()
+
+      const { container } = render(
+        <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
+      )
+
+      const app = container.querySelector('[role="application"]')!
+
+      // Initialize focus (goes to col-0, the 5)
+      fireEvent.keyDown(app, { key: 'ArrowLeft' })
+      // Pick up the 5
+      fireEvent.keyDown(app, { key: 'Enter' })
+      // Move focus right to col-1 (the 6)
+      fireEvent.keyDown(app, { key: 'ArrowRight' })
+      // Drop
+      fireEvent.keyDown(app, { key: 'Enter' })
+
+      expect(onMoveCards).toHaveBeenCalledWith('col-0', 0, 'col-1')
+    })
+
+    it('Escape cancels a keyboard selection', () => {
+      const onMoveCards = vi.fn()
+      const game = createKeyboardGame()
+      const preferences = createDefaultPreferences()
+
+      const { container } = render(
+        <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
+      )
+
+      const app = container.querySelector('[role="application"]')!
+      fireEvent.keyDown(app, { key: 'ArrowRight' })
+      fireEvent.keyDown(app, { key: 'Enter' }) // pick up
+      fireEvent.keyDown(app, { key: 'Escape' }) // cancel
+      fireEvent.keyDown(app, { key: 'ArrowRight' })
+      fireEvent.keyDown(app, { key: 'Enter' }) // would try to drop, but nothing is selected
+
+      // onMoveCards should not be called since selection was cancelled and we just picked up a new card
+      expect(onMoveCards).not.toHaveBeenCalled()
+    })
+
+    it('invalid drop does not call onMoveCards', () => {
+      const onMoveCards = vi.fn()
+      // col-0 has 5, col-2 has K - can't drop 5 on K
+      const game = createKeyboardGame()
+      const preferences = createDefaultPreferences()
+
+      const { container } = render(
+        <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
+      )
+
+      const app = container.querySelector('[role="application"]')!
+      fireEvent.keyDown(app, { key: 'ArrowRight' }) // initialize
+      fireEvent.keyDown(app, { key: 'Enter' }) // pick up 5
+      fireEvent.keyDown(app, { key: 'ArrowRight' }) // to col-1 (6)
+      fireEvent.keyDown(app, { key: 'ArrowRight' }) // to col-2 (K)
+      fireEvent.keyDown(app, { key: 'Enter' }) // try to drop on K
+
+      expect(onMoveCards).not.toHaveBeenCalled()
+    })
+  })
+
   describe('card art and size preferences', () => {
     it('passes cardArt preference to columns', () => {
       const game = createTestGame()

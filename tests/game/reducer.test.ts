@@ -115,6 +115,23 @@ describe('MOVE_CARDS action', () => {
       expect(result.game.columns[1].cards).toHaveLength(2)
     })
 
+    it('increments the move counter', () => {
+      const game = createGameWithColumns([
+        [createFaceUpCard('spades', '5')],
+        [createFaceUpCard('hearts', '6')],
+      ])
+      game.moves = 7
+      const state = createGameState(game)
+      const action: GameAction = {
+        type: 'MOVE_CARDS',
+        payload: { fromColumnId: 'col-0', cardIndex: 0, toColumnId: 'col-1' },
+      }
+
+      const result = gameReducer(state, action)
+
+      expect(result.game.moves).toBe(8)
+    })
+
     it('pushes current game to history', () => {
       const game = createGameWithColumns([
         [createFaceUpCard('spades', '5')],

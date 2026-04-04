@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useModalA11y } from '../../hooks/useModalA11y'
 
 export interface HelpModalProps {
   isOpen: boolean
@@ -6,19 +7,25 @@ export interface HelpModalProps {
 }
 
 export function HelpModal({ isOpen, onClose }: HelpModalProps) {
+  const containerRef = useModalA11y({ isOpen, onClose })
+
   if (!isOpen) return null
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="help-title"
     >
       <div
+        ref={containerRef}
         className="bg-stone-800 rounded-xl shadow-2xl w-full max-w-lg mx-4 font-['DM_Sans']"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-700">
-          <h2 className="text-xl font-semibold text-white">How to Play</h2>
+          <h2 id="help-title" className="text-xl font-semibold text-white">How to Play</h2>
           <button
             onClick={onClose}
             className="p-1 text-stone-400 hover:text-white transition-colors"
@@ -88,6 +95,18 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
               <li><span className="text-white font-medium">1 Suit (Easy):</span> All cards are Spades</li>
               <li><span className="text-white font-medium">2 Suits (Medium):</span> Spades and Hearts</li>
               <li><span className="text-white font-medium">4 Suits (Hard):</span> All four suits</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wide mb-2">
+              Keyboard Controls
+            </h3>
+            <ul className="text-stone-300 text-sm leading-relaxed space-y-1 list-disc list-inside">
+              <li><span className="text-white font-medium">Arrow keys:</span> Navigate between cards and columns</li>
+              <li><span className="text-white font-medium">Enter / Space:</span> Pick up a card, then place it</li>
+              <li><span className="text-white font-medium">Escape:</span> Cancel a selection or close a dialog</li>
+              <li><span className="text-white font-medium">?:</span> Open this help dialog</li>
             </ul>
           </section>
 

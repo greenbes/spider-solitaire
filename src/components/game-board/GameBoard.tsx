@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import type { GameBoardProps, Column as ColumnType } from '../../game/types'
 import { Column } from './Column'
 import { StockPile } from './StockPile'
@@ -11,6 +11,11 @@ interface DragState {
   cardIndex: number
 }
 
+interface KeyboardSelection {
+  columnIndex: number
+  cardIndex: number
+}
+
 export function GameBoard({
   game,
   preferences,
@@ -19,6 +24,9 @@ export function GameBoard({
   onDeal,
 }: GameBoardProps) {
   const [dragState, setDragState] = useState<DragState | null>(null)
+  const [kbFocus, setKbFocus] = useState<KeyboardSelection | null>(null)
+  const [kbSelected, setKbSelected] = useState<KeyboardSelection | null>(null)
+  const boardRef = useRef<HTMLDivElement>(null)
   const themeStyles = getThemeStyles(preferences.theme)
 
   // Check if any column is empty (deal is disabled if so)
@@ -42,22 +50,178 @@ export function GameBoard({
 
   // Check if dropping on a specific column would be a valid move
   const isColumnValidTarget = (targetColumn: ColumnType): boolean => {
-    if (!dragState) return false
-    if (dragState.fromColumnId === targetColumn.id) return false
+    const source = dragState
+      ? { columnId: dragState.fromColumnId, cardIndex: dragState.cardIndex }
+      : kbSelected
+        ? {
+            columnId: game.columns[kbSelected.columnIndex].id,
+            cardIndex: kbSelected.cardIndex,
+          }
+        : null
+    if (!source) return false
+    if (source.columnId === targetColumn.id) return false
 
-    const fromCol = game.columns.find((c) => c.id === dragState.fromColumnId)
+    const fromCol = game.columns.find((c) => c.id === source.columnId)
     if (!fromCol) return false
 
-    // Check if the sequence can be moved
-    if (!canMoveSameSequence(fromCol, dragState.cardIndex)) return false
+    if (!canMoveSameSequence(fromCol, source.cardIndex)) return false
 
-    // Check if it can be placed on the target
-    const movingCard = fromCol.cards[dragState.cardIndex]
+    const movingCard = fromCol.cards[source.cardIndex]
     return isValidMove(movingCard, targetColumn)
   }
 
+  // Find the deepest movable card index in a column (start of movable sequence)
+  const findMovableStart = useCallback((column: ColumnType): number => {
+    // Returns the smallest index such that the sequence from that index is movable
+    if (column.cards.length === 0) return 0
+    let best = column.cards.length - 1
+    for (let i = column.cards.length - 1; i >= 0; i--) {
+      if (canMoveSameSequence(column, i)) {
+        best = i
+      } else {
+        break
+      }
+    }
+    return best
+  }, [])
+
+  const clampFocus = useCallback(
+    (columnIndex: number, cardIndex: number): KeyboardSelection => {
+      const col = game.columns[columnIndex]
+      if (!col || col.cards.length === 0) {
+        return { columnIndex, cardIndex: 0 }
+      }
+      const movableStart = findMovableStart(col)
+      return {
+        columnIndex,
+        cardIndex: Math.max(movableStart, Math.min(cardIndex, col.cards.length - 1)),
+      }
+    },
+    [game.columns, findMovableStart]
+  )
+
+  // Keyboard event handler on the board container
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // Initialize focus on first key press
+      if (!kbFocus) {
+        const firstNonEmpty = game.columns.findIndex((c) => c.cards.length > 0)
+        if (firstNonEmpty === -1) return
+        setKbFocus(clampFocus(firstNonEmpty, game.columns[firstNonEmpty].cards.length - 1))
+        e.preventDefault()
+        return
+      }
+
+      const current = kbFocus
+      const currentCol = game.columns[current.columnIndex]
+
+      switch (e.key) {
+        case 'ArrowLeft': {
+          e.preventDefault()
+          for (let offset = 1; offset <= game.columns.length; offset++) {
+            const next = (current.columnIndex - offset + game.columns.length) % game.columns.length
+            const col = game.columns[next]
+            if (col.cards.length > 0 || kbSelected) {
+              setKbFocus(clampFocus(next, col.cards.length - 1))
+              break
+            }
+          }
+          break
+        }
+        case 'ArrowRight': {
+          e.preventDefault()
+          for (let offset = 1; offset <= game.columns.length; offset++) {
+            const next = (current.columnIndex + offset) % game.columns.length
+            const col = game.columns[next]
+            if (col.cards.length > 0 || kbSelected) {
+              setKbFocus(clampFocus(next, col.cards.length - 1))
+              break
+            }
+          }
+          break
+        }
+        case 'ArrowUp': {
+          e.preventDefault()
+          if (!currentCol || currentCol.cards.length === 0) break
+          const movableStart = findMovableStart(currentCol)
+          if (current.cardIndex > movableStart) {
+            setKbFocus({ ...current, cardIndex: current.cardIndex - 1 })
+          }
+          break
+        }
+        case 'ArrowDown': {
+          e.preventDefault()
+          if (!currentCol || currentCol.cards.length === 0) break
+          if (current.cardIndex < currentCol.cards.length - 1) {
+            setKbFocus({ ...current, cardIndex: current.cardIndex + 1 })
+          }
+          break
+        }
+        case 'Enter':
+        case ' ': {
+          e.preventDefault()
+          if (!kbSelected) {
+            // Pick up: only if focused card is part of a movable sequence
+            if (!currentCol || currentCol.cards.length === 0) break
+            if (!canMoveSameSequence(currentCol, current.cardIndex)) break
+            setKbSelected(current)
+          } else {
+            // Drop
+            const fromCol = game.columns[kbSelected.columnIndex]
+            const toCol = game.columns[current.columnIndex]
+            if (fromCol.id === toCol.id) {
+              // Deselect
+              setKbSelected(null)
+              break
+            }
+            const movingCard = fromCol.cards[kbSelected.cardIndex]
+            if (isValidMove(movingCard, toCol)) {
+              onMoveCards?.(fromCol.id, kbSelected.cardIndex, toCol.id)
+            }
+            setKbSelected(null)
+          }
+          break
+        }
+        case 'Escape': {
+          if (kbSelected) {
+            e.preventDefault()
+            setKbSelected(null)
+          }
+          break
+        }
+      }
+    },
+    [kbFocus, kbSelected, game.columns, clampFocus, findMovableStart, onMoveCards]
+  )
+
+  // After a successful move, re-clamp keyboard focus to a valid position
+  useEffect(() => {
+    if (!kbFocus) return
+    const col = game.columns[kbFocus.columnIndex]
+    if (!col || col.cards.length === 0) {
+      // Find next non-empty column
+      const next = game.columns.findIndex((c) => c.cards.length > 0)
+      if (next >= 0) {
+        setKbFocus(clampFocus(next, game.columns[next].cards.length - 1))
+      } else {
+        setKbFocus(null)
+      }
+      return
+    }
+    if (kbFocus.cardIndex >= col.cards.length) {
+      setKbFocus(clampFocus(kbFocus.columnIndex, col.cards.length - 1))
+    }
+  }, [game.columns, kbFocus, clampFocus])
+
   return (
-    <div className={`h-full w-full ${themeStyles.background} p-2 sm:p-4 md:p-6 flex flex-col`}>
+    <div
+      ref={boardRef}
+      className={`h-full w-full ${themeStyles.background} p-2 sm:p-4 md:p-6 flex flex-col outline-none`}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="application"
+      aria-label="Spider Solitaire game board. Use arrow keys to navigate cards, Enter to pick up or place, Escape to cancel."
+    >
       {/* Status bar with stock and foundations */}
       <div className="flex items-start justify-between mb-4 sm:mb-6">
         <StockPile
@@ -76,10 +240,15 @@ export function GameBoard({
 
       {/* Tableau - 10 columns */}
       <div className="flex-1 flex gap-1 sm:gap-2 md:gap-3 min-h-0">
-        {game.columns.map((column) => {
+        {game.columns.map((column, columnIndex) => {
           const isHintSource = activeHint?.fromColumnId === column.id
           const isHintTarget = activeHint?.toColumnId === column.id
           const hintCardIndex = isHintSource ? activeHint?.cardIndex : undefined
+
+          const isKbFocused = kbFocus?.columnIndex === columnIndex
+          const kbFocusedCardIndex = isKbFocused ? kbFocus.cardIndex : undefined
+          const isKbSelectedColumn = kbSelected?.columnIndex === columnIndex
+          const kbSelectedCardIndex = isKbSelectedColumn ? kbSelected.cardIndex : undefined
 
           return (
             <Column
@@ -92,6 +261,8 @@ export function GameBoard({
               isHintSource={isHintSource}
               isHintTarget={isHintTarget}
               hintCardIndex={hintCardIndex}
+              kbFocusedCardIndex={kbFocusedCardIndex}
+              kbSelectedCardIndex={kbSelectedCardIndex}
               onCardDragStart={handleCardDragStart}
               onCardDragEnd={handleCardDragEnd}
               onDrop={handleDrop}
@@ -104,6 +275,13 @@ export function GameBoard({
       {hasEmptyColumn && game.dealsRemaining > 0 && (
         <div className="mt-2 text-center text-amber-400/80 text-xs sm:text-sm">
           Fill all empty columns before dealing
+        </div>
+      )}
+
+      {/* Keyboard hint bar */}
+      {kbSelected && (
+        <div className="mt-2 text-center text-amber-300 text-xs sm:text-sm" role="status">
+          Card selected — arrow keys to navigate, Enter to place, Escape to cancel
         </div>
       )}
     </div>

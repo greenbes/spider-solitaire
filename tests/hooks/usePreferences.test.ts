@@ -89,6 +89,58 @@ describe('usePreferences', () => {
 
       expect(result.current.preferences).toEqual(defaultPreferences)
     })
+
+    it('replaces invalid theme with default', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...defaultPreferences, theme: 'neon-pink' })
+      )
+
+      const { result } = renderHook(() => usePreferences())
+
+      expect(result.current.preferences.theme).toBe('green-felt')
+    })
+
+    it('replaces invalid cardArt with default', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...defaultPreferences, cardArt: 'holographic' })
+      )
+
+      const { result } = renderHook(() => usePreferences())
+
+      expect(result.current.preferences.cardArt).toBe('classic')
+    })
+
+    it('replaces invalid cardSize with default', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...defaultPreferences, cardSize: 'huge' })
+      )
+
+      const { result } = renderHook(() => usePreferences())
+
+      expect(result.current.preferences.cardSize).toBe('large')
+    })
+
+    it('replaces non-boolean highContrast with default', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...defaultPreferences, highContrast: 'yes' })
+      )
+
+      const { result } = renderHook(() => usePreferences())
+
+      expect(result.current.preferences.highContrast).toBe(false)
+    })
+
+    it('handles stored null gracefully', () => {
+      localStorage.setItem(STORAGE_KEY, 'null')
+
+      const { result } = renderHook(() => usePreferences())
+
+      expect(result.current.preferences).toEqual(defaultPreferences)
+    })
   })
 
   describe('updating preferences', () => {

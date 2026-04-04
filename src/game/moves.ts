@@ -45,7 +45,8 @@ export function canMoveSameSequence(column: Column, fromIndex: number): boolean 
 
 /**
  * Execute a card move between columns
- * Returns new game state with updated columns and incremented move count
+ * Returns new game state with updated columns. Does NOT increment the move
+ * counter — that is the reducer's responsibility after the move is committed.
  */
 export function moveCards(
   game: Game,
@@ -83,7 +84,6 @@ export function moveCards(
   return {
     ...game,
     columns: newColumns,
-    moves: game.moves + 1,
   }
 }
 

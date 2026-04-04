@@ -61,6 +61,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
       // Execute move
       let newGame = moveCards(state.game, fromColumnId, cardIndex, toColumnId)
+      newGame = { ...newGame, moves: newGame.moves + 1 }
 
       // Auto-flip exposed card in source column
       newGame = flipTopCard(newGame, fromColumnId)
