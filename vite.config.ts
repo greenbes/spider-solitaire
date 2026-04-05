@@ -10,11 +10,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      mode: 'development',
       registerType: 'autoUpdate',
       devOptions: {
         enabled: true
       },
-      includeAssets: ['favicon.ico', 'icons/*.svg'],
+      includeAssets: ['favicon.svg', 'icons/*.svg'],
       manifest: {
         name: 'Spider Solitaire',
         short_name: 'Spider',
@@ -30,12 +31,12 @@ export default defineConfig({
             type: 'image/svg+xml'
           },
           {
-            src: 'icons/icon-192x192.svg',
+            src: 'icons/icon-512x512.svg',
             sizes: '512x512',
             type: 'image/svg+xml'
           },
           {
-            src: 'icons/icon-192x192.svg',
+            src: 'icons/icon-512x512-maskable.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
             purpose: 'maskable'

@@ -6,6 +6,7 @@ import {
   clearPersistedGameState,
 } from '../../src/hooks/useGamePersistence'
 import type { GameState } from '../../src/game/types'
+import { MAX_UNDO_HISTORY } from '../../src/game/constants'
 import {
   createGame,
   createFaceUpCard,
@@ -98,6 +99,28 @@ describe('useGamePersistence', () => {
     rerender({ s: { ...state } })
 
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull()
+  })
+
+  it('trims persisted history to configured limit', () => {
+    const baseState = makeValidGameState()
+    const oversizedState = makeValidGameState({
+      history: Array.from({ length: MAX_UNDO_HISTORY + 10 }, (_, index) => ({
+        ...baseState.game,
+        moves: index,
+      })),
+    })
+
+    const { rerender } = renderHook(
+      ({ s }) => useGamePersistence(s),
+      { initialProps: { s: baseState } }
+    )
+
+    rerender({ s: oversizedState })
+
+    const stored = localStorage.getItem(STORAGE_KEY)
+    expect(stored).not.toBeNull()
+    const parsed = JSON.parse(stored!)
+    expect(parsed.state.history).toHaveLength(MAX_UNDO_HISTORY)
   })
 })
 
@@ -207,6 +230,25 @@ describe('loadPersistedGameState', () => {
     expect(loaded!.game.moves).toBe(42)
     expect(loaded!.game.foundationsCompleted).toBe(3)
     expect(loaded!.gameStarted).toBe(true)
+  })
+
+  it('trims oversized history when restoring', () => {
+    const baseState = makeValidGameState()
+    const state = makeValidGameState({
+      history: Array.from({ length: MAX_UNDO_HISTORY + 25 }, (_, index) => ({
+        ...baseState.game,
+        moves: index,
+      })),
+    })
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ version: 1, state })
+    )
+
+    const loaded = loadPersistedGameState()
+    expect(loaded).not.toBeNull()
+    expect(loaded!.history).toHaveLength(MAX_UNDO_HISTORY)
   })
 })
 

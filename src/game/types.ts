@@ -91,8 +91,6 @@ export interface GameBoardProps {
     toColumnId: string
   ) => void
   onDeal?: () => void
-  onSuitCompleted?: (suit: Suit) => void
-  onCardFlip?: (columnId: string, cardIndex: number) => void
 }
 
 // =============================================================================

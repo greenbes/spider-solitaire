@@ -93,7 +93,6 @@ export function Column({
           `}
           role="region"
           aria-label={emptyLabel}
-          aria-dropeffect={isValidTarget ? 'move' : 'none'}
         >
           <span className={`text-xs sm:text-sm ${isHintTarget ? 'text-amber-400' : 'text-emerald-500/50'}`}>
             {isHintTarget ? 'Move here' : 'Empty'}

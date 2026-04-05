@@ -201,6 +201,36 @@ describe('GameBoard component', () => {
       expect(onMoveCards).not.toHaveBeenCalled()
     })
 
+    it('does not call onMoveCards for invalid drag destination', () => {
+      const onMoveCards = vi.fn()
+      const columnCards = [
+        [createFaceUpCard('spades', '5')],
+        [createFaceUpCard('hearts', '3')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+        [createFaceUpCard('clubs', 'K')],
+      ]
+      const game = createGameWithColumns(columnCards)
+      const preferences = createDefaultPreferences()
+
+      const { container } = render(
+        <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
+      )
+
+      const columns = container.querySelectorAll('[class*="flex-1 min-w-0"]')
+      const firstColumnCard = columns[0].querySelector('[draggable="true"]')
+
+      fireEvent.dragStart(firstColumnCard!)
+      fireEvent.drop(columns[1])
+
+      expect(onMoveCards).not.toHaveBeenCalled()
+    })
+
     it('clears drag state on drag end', () => {
       const onMoveCards = vi.fn()
       const columnCards = [
@@ -324,7 +354,9 @@ describe('GameBoard component', () => {
 
       render(<GameBoard game={game} preferences={preferences} />)
 
-      const app = screen.getByRole('application')
+      const app = screen.getByRole('region', {
+        name: /Spider Solitaire game board/i,
+      })
       expect(app.getAttribute('tabindex')).toBe('0')
     })
 
@@ -334,7 +366,7 @@ describe('GameBoard component', () => {
 
       const { container } = render(<GameBoard game={game} preferences={preferences} />)
 
-      const app = container.querySelector('[role="application"]')!
+      const app = container.querySelector('[role="region"]')!
       fireEvent.keyDown(app, { key: 'ArrowRight' })
 
       // After initializing focus, there should be a focused card (has ring-blue-400)
@@ -350,7 +382,7 @@ describe('GameBoard component', () => {
         <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
       )
 
-      const app = container.querySelector('[role="application"]')!
+      const app = container.querySelector('[role="region"]')!
 
       // Initialize focus (goes to col-0, the 5)
       fireEvent.keyDown(app, { key: 'ArrowLeft' })
@@ -373,7 +405,7 @@ describe('GameBoard component', () => {
         <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
       )
 
-      const app = container.querySelector('[role="application"]')!
+      const app = container.querySelector('[role="region"]')!
       fireEvent.keyDown(app, { key: 'ArrowRight' })
       fireEvent.keyDown(app, { key: 'Enter' }) // pick up
       fireEvent.keyDown(app, { key: 'Escape' }) // cancel
@@ -394,7 +426,7 @@ describe('GameBoard component', () => {
         <GameBoard game={game} preferences={preferences} onMoveCards={onMoveCards} />
       )
 
-      const app = container.querySelector('[role="application"]')!
+      const app = container.querySelector('[role="region"]')!
       fireEvent.keyDown(app, { key: 'ArrowRight' }) // initialize
       fireEvent.keyDown(app, { key: 'Enter' }) // pick up 5
       fireEvent.keyDown(app, { key: 'ArrowRight' }) // to col-1 (6)

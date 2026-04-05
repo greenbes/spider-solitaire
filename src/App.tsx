@@ -6,7 +6,7 @@ import { HINT_TOTAL_DURATION_MS } from './game/constants'
 import { usePreferences } from './hooks/usePreferences'
 import { useGamePersistence, loadPersistedGameState } from './hooks/useGamePersistence'
 import { useModalA11y } from './hooks/useModalA11y'
-import type { Difficulty, Suit, GameBoardPreferences, Hint } from './game/types'
+import type { Difficulty, GameBoardPreferences, Hint } from './game/types'
 import { getThemeStyles } from './game/themes'
 
 interface EndGameModalProps {
@@ -117,15 +117,6 @@ function App() {
     setActiveHint(cachedHint)
   }, [cachedHint])
 
-  const handleSuitCompleted = useCallback((_suit: Suit) => {
-    // The reducer handles auto-completion in MOVE_CARDS
-    // This callback is here for future use (e.g., celebrations)
-  }, [])
-
-  const handleCardFlip = useCallback((columnId: string) => {
-    dispatch({ type: 'FLIP_CARD', payload: { columnId } })
-  }, [])
-
   const hasEmptyColumn = state.game.columns.some((c) => c.cards.length === 0)
   const canDeal = state.game.dealsRemaining > 0 && !hasEmptyColumn
   const canUndo = state.history.length > 0
@@ -183,8 +174,6 @@ function App() {
           activeHint={activeHint}
           onMoveCards={handleMoveCards}
           onDeal={handleDeal}
-          onSuitCompleted={handleSuitCompleted}
-          onCardFlip={handleCardFlip}
         />
       ) : (
         <div className={`h-full w-full ${themeStyles.background} flex items-center justify-center`}>

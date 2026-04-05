@@ -3,7 +3,7 @@ import { createDeck, shuffleDeck } from './deck'
 import { dealInitialCards, dealFromStock } from './deal'
 import { isValidMove, canMoveSameSequence, moveCards, flipTopCard } from './moves'
 import { detectCompletedSuit, removeCompletedSuit, isWinCondition } from './completion'
-import { INITIAL_DEALS } from './constants'
+import { INITIAL_DEALS, MAX_UNDO_HISTORY } from './constants'
 
 export const initialGameState: GameState = {
   game: {
@@ -33,6 +33,15 @@ function createNewGame(difficulty: Difficulty): Game {
   }
 }
 
+function pushHistory(history: Game[], game: Game): Game[] {
+  const nextHistory = [...history, game]
+  if (nextHistory.length <= MAX_UNDO_HISTORY) {
+    return nextHistory
+  }
+
+  return nextHistory.slice(nextHistory.length - MAX_UNDO_HISTORY)
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'NEW_GAME': {
@@ -57,7 +66,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (!isValidMove(fromCol.cards[cardIndex], toCol)) return state
 
       // Save current state for undo
-      const newHistory = [...state.history, state.game]
+      const newHistory = pushHistory(state.history, state.game)
 
       // Execute move
       let newGame = moveCards(state.game, fromColumnId, cardIndex, toColumnId)
@@ -91,7 +100,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return state // Cannot deal
       }
 
-      const newHistory = [...state.history, state.game]
+      const newHistory = pushHistory(state.history, state.game)
       let newGame = dealFromStock(state.game)
 
       // Check all columns for completed suits after deal
@@ -136,7 +145,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const column = state.game.columns.find((c) => c.id === action.payload.columnId)
       if (!column || !detectCompletedSuit(column)) return state
 
-      const newHistory = [...state.history, state.game]
+      const newHistory = pushHistory(state.history, state.game)
       let newGame = removeCompletedSuit(state.game, action.payload.columnId)
       newGame = flipTopCard(newGame, action.payload.columnId)
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { gameReducer, initialGameState } from '../../src/game/reducer'
 import type { GameState, GameAction, Game } from '../../src/game/types'
+import { MAX_UNDO_HISTORY } from '../../src/game/constants'
 import {
   createFaceUpCard,
   createFaceDownCard,
@@ -147,6 +148,28 @@ describe('MOVE_CARDS action', () => {
 
       expect(result.history).toHaveLength(1)
       expect(result.history[0]).toEqual(game)
+    })
+
+    it('caps history length to prevent unbounded growth', () => {
+      const game = createGameWithColumns([
+        [createFaceUpCard('spades', '5')],
+        [createFaceUpCard('hearts', '6')],
+      ])
+      const history = Array.from({ length: MAX_UNDO_HISTORY }, (_, index) => ({
+        ...game,
+        moves: index,
+      }))
+      const state = createGameState(game, { history })
+      const action: GameAction = {
+        type: 'MOVE_CARDS',
+        payload: { fromColumnId: 'col-0', cardIndex: 0, toColumnId: 'col-1' },
+      }
+
+      const result = gameReducer(state, action)
+
+      expect(result.history).toHaveLength(MAX_UNDO_HISTORY)
+      expect(result.history[0].moves).toBe(1)
+      expect(result.history[result.history.length - 1]).toEqual(game)
     })
 
     it('auto-flips exposed face-down card', () => {

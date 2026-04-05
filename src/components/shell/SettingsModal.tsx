@@ -61,6 +61,7 @@ export function SettingsModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-700">
           <h2 id="settings-title" className="text-xl font-semibold text-white">Settings</h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 text-stone-400 hover:text-white transition-colors"
             aria-label="Close settings"
@@ -71,26 +72,37 @@ export function SettingsModal({
 
         <div className="px-6 py-5 space-y-6">
           {/* Card Size */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-stone-300">
+          <fieldset className="space-y-2">
+            <legend className="block text-sm font-medium text-stone-300">
               Card Size
-            </label>
-            <div className="flex gap-2">
-              {CARD_SIZES.map((size) => (
-                <button
-                  key={size.value}
-                  onClick={() => handleChange('cardSize', size.value)}
-                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    preferences.cardSize === size.value
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
-                  }`}
-                >
-                  {size.label}
-                </button>
-              ))}
+            </legend>
+            <div className="flex gap-2" role="radiogroup" aria-label="Card size">
+              {CARD_SIZES.map((size) => {
+                const isSelected = preferences.cardSize === size.value
+
+                return (
+                  <label
+                    key={size.value}
+                    className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors text-center cursor-pointer ${
+                      isSelected
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
+                    }`}
+                  >
+                    <input
+                      className="sr-only"
+                      type="radio"
+                      name="card-size"
+                      value={size.value}
+                      checked={isSelected}
+                      onChange={() => handleChange('cardSize', size.value)}
+                    />
+                    {size.label}
+                  </label>
+                )
+              })}
             </div>
-          </div>
+          </fieldset>
 
           {/* High Contrast */}
           <div className="flex items-center justify-between">
@@ -98,7 +110,11 @@ export function SettingsModal({
               High Contrast Mode
             </label>
             <button
+              type="button"
               onClick={() => handleChange('highContrast', !preferences.highContrast)}
+              role="switch"
+              aria-checked={preferences.highContrast}
+              aria-label="High Contrast Mode"
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 preferences.highContrast ? 'bg-emerald-600' : 'bg-stone-600'
               }`}
@@ -113,10 +129,11 @@ export function SettingsModal({
 
           {/* Card Art */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-stone-300">
+            <label htmlFor="card-art-select" className="block text-sm font-medium text-stone-300">
               Card Art
             </label>
             <select
+              id="card-art-select"
               value={preferences.cardArt}
               onChange={(e) => handleChange('cardArt', e.target.value as CardArt)}
               className="w-full px-4 py-2.5 bg-stone-700 text-white rounded-lg border border-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -131,10 +148,11 @@ export function SettingsModal({
 
           {/* Theme */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-stone-300">
+            <label htmlFor="theme-select" className="block text-sm font-medium text-stone-300">
               Background Theme
             </label>
             <select
+              id="theme-select"
               value={preferences.theme}
               onChange={(e) => handleChange('theme', e.target.value as Theme)}
               className="w-full px-4 py-2.5 bg-stone-700 text-white rounded-lg border border-stone-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -148,33 +166,47 @@ export function SettingsModal({
           </div>
 
           {/* Toolbar Position */}
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-stone-300">
+          <fieldset className="flex items-center justify-between">
+            <legend className="text-sm font-medium text-stone-300">
               Toolbar Position
-            </label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleChange('toolbarPosition', 'top')}
-                className={`px-4 py-1.5 rounded-lg font-medium transition-colors ${
+            </legend>
+            <div className="flex gap-2" role="radiogroup" aria-label="Toolbar position">
+              <label
+                className={`px-4 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                   preferences.toolbarPosition === 'top'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                 }`}
               >
+                <input
+                  className="sr-only"
+                  type="radio"
+                  name="toolbar-position"
+                  value="top"
+                  checked={preferences.toolbarPosition === 'top'}
+                  onChange={() => handleChange('toolbarPosition', 'top')}
+                />
                 Top
-              </button>
-              <button
-                onClick={() => handleChange('toolbarPosition', 'bottom')}
-                className={`px-4 py-1.5 rounded-lg font-medium transition-colors ${
+              </label>
+              <label
+                className={`px-4 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                   preferences.toolbarPosition === 'bottom'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-stone-700 text-stone-300 hover:bg-stone-600'
                 }`}
               >
+                <input
+                  className="sr-only"
+                  type="radio"
+                  name="toolbar-position"
+                  value="bottom"
+                  checked={preferences.toolbarPosition === 'bottom'}
+                  onChange={() => handleChange('toolbarPosition', 'bottom')}
+                />
                 Bottom
-              </button>
+              </label>
             </div>
-          </div>
+          </fieldset>
 
           {/* Show Statistics */}
           <div className="flex items-center justify-between">
@@ -182,7 +214,11 @@ export function SettingsModal({
               Show Statistics
             </label>
             <button
+              type="button"
               onClick={() => handleChange('showStatistics', !preferences.showStatistics)}
+              role="switch"
+              aria-checked={preferences.showStatistics}
+              aria-label="Show Statistics"
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 preferences.showStatistics ? 'bg-emerald-600' : 'bg-stone-600'
               }`}
@@ -198,6 +234,7 @@ export function SettingsModal({
 
         <div className="px-6 py-4 border-t border-stone-700">
           <button
+            type="button"
             onClick={onClose}
             className="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
           >

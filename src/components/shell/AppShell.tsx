@@ -101,7 +101,12 @@ export function AppShell({
   }, [])
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-stone-900 font-['DM_Sans']">
+    <div
+      className={`h-screen w-screen flex flex-col bg-stone-900 font-['DM_Sans'] ${
+        preferences.highContrast ? 'high-contrast' : ''
+      }`}
+      data-high-contrast={preferences.highContrast ? 'true' : 'false'}
+    >
       {isTop && (
         <GameToolbar
           stats={stats}

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { GameState, Difficulty, Suit, Rank } from '../game/types'
-import { RANKS, SUITS, NUM_COLUMNS, INITIAL_DEALS } from '../game/constants'
+import { RANKS, SUITS, NUM_COLUMNS, INITIAL_DEALS, MAX_UNDO_HISTORY } from '../game/constants'
 
 const STORAGE_KEY = 'spider-solitaire-game-state'
 const SCHEMA_VERSION = 1
@@ -66,6 +66,17 @@ function isGameState(value: unknown): value is GameState {
   )
 }
 
+function trimHistory(state: GameState): GameState {
+  if (state.history.length <= MAX_UNDO_HISTORY) {
+    return state
+  }
+
+  return {
+    ...state,
+    history: state.history.slice(state.history.length - MAX_UNDO_HISTORY),
+  }
+}
+
 /**
  * Load a previously saved game state. Returns null if nothing valid is stored.
  */
@@ -81,7 +92,7 @@ export function loadPersistedGameState(): GameState | null {
     if (!isGameState(parsed.state)) return null
     // Only restore if a game was actually in progress
     if (!parsed.state.gameStarted || parsed.state.isWon) return null
-    return parsed.state
+    return trimHistory(parsed.state)
   } catch {
     return null
   }
@@ -106,7 +117,10 @@ export function useGamePersistence(state: GameState): void {
         localStorage.removeItem(STORAGE_KEY)
         return
       }
-      const payload: PersistedState = { version: SCHEMA_VERSION, state }
+      const payload: PersistedState = {
+        version: SCHEMA_VERSION,
+        state: trimHistory(state),
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
     } catch {
       // Storage errors (quota, unavailable) are non-fatal

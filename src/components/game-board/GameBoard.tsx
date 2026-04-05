@@ -11,6 +11,11 @@ interface DragState {
   cardIndex: number
 }
 
+interface MoveSource {
+  columnId: string
+  cardIndex: number
+}
+
 interface KeyboardSelection {
   columnIndex: number
   cardIndex: number
@@ -41,16 +46,36 @@ export function GameBoard({
     setDragState(null)
   }
 
+  const isValidTargetForSource = useCallback(
+    (source: MoveSource, targetColumnId: string): boolean => {
+      const fromCol = game.columns.find((c) => c.id === source.columnId)
+      const targetCol = game.columns.find((c) => c.id === targetColumnId)
+      if (!fromCol || !targetCol) return false
+      if (fromCol.id === targetCol.id) return false
+      if (!canMoveSameSequence(fromCol, source.cardIndex)) return false
+
+      const movingCard = fromCol.cards[source.cardIndex]
+      return isValidMove(movingCard, targetCol)
+    },
+    [game.columns]
+  )
+
   const handleDrop = (toColumnId: string) => {
-    if (dragState && dragState.fromColumnId !== toColumnId) {
-      onMoveCards?.(dragState.fromColumnId, dragState.cardIndex, toColumnId)
+    if (dragState) {
+      const source: MoveSource = {
+        columnId: dragState.fromColumnId,
+        cardIndex: dragState.cardIndex,
+      }
+      if (isValidTargetForSource(source, toColumnId)) {
+        onMoveCards?.(source.columnId, source.cardIndex, toColumnId)
+      }
     }
     setDragState(null)
   }
 
   // Check if dropping on a specific column would be a valid move
   const isColumnValidTarget = (targetColumn: ColumnType): boolean => {
-    const source = dragState
+    const source: MoveSource | null = dragState
       ? { columnId: dragState.fromColumnId, cardIndex: dragState.cardIndex }
       : kbSelected
         ? {
@@ -59,15 +84,8 @@ export function GameBoard({
           }
         : null
     if (!source) return false
-    if (source.columnId === targetColumn.id) return false
 
-    const fromCol = game.columns.find((c) => c.id === source.columnId)
-    if (!fromCol) return false
-
-    if (!canMoveSameSequence(fromCol, source.cardIndex)) return false
-
-    const movingCard = fromCol.cards[source.cardIndex]
-    return isValidMove(movingCard, targetColumn)
+    return isValidTargetForSource(source, targetColumn.id)
   }
 
   // Find the deepest movable card index in a column (start of movable sequence)
@@ -219,7 +237,7 @@ export function GameBoard({
       className={`h-full w-full ${themeStyles.background} p-2 sm:p-4 md:p-6 flex flex-col outline-none`}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      role="application"
+      role="region"
       aria-label="Spider Solitaire game board. Use arrow keys to navigate cards, Enter to pick up or place, Escape to cancel."
     >
       {/* Status bar with stock and foundations */}

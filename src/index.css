@@ -36,6 +36,38 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Manual high-contrast mode (user preference) */
+.high-contrast {
+  color-scheme: dark;
+}
+
+.high-contrast .card-face,
+.high-contrast .card-back {
+  border-width: 3px !important;
+}
+
+.high-contrast .card-face {
+  box-shadow: 0 0 0 1px #fbbf24 !important;
+}
+
+.high-contrast .empty-slot {
+  border-color: #fbbf24 !important;
+  background-color: rgb(0 0 0 / 0.35) !important;
+}
+
+.high-contrast button {
+  border: 1px solid rgb(214 211 209 / 0.7);
+}
+
+.high-contrast button:focus-visible,
+.high-contrast [role='button']:focus-visible,
+.high-contrast [role='switch']:focus-visible,
+.high-contrast [role='radio']:focus-visible,
+.high-contrast select:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+}
+
 /*
  * Forced Colors Mode (High Contrast) Support
  *
