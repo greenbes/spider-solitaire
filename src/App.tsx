@@ -1,11 +1,18 @@
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react'
 import { AppShell } from './components/shell'
 import { GameBoard } from './components/game-board'
-import { gameReducer, initialGameState, getHint, hasValidMoves } from './game'
+import {
+  gameReducer,
+  initialGameState,
+  getHint,
+  hasValidMoves,
+  Difficulty,
+  GameBoardPreferences,
+  Hint,
+} from './game'
 import { HINT_TOTAL_DURATION_MS } from './game/constants'
 import { usePreferences } from './hooks/usePreferences'
 import { useGamePersistence, loadPersistedGameState } from './hooks/useGamePersistence'
-import { useModalA11y } from './hooks/useModalA11y'
 import { EndGameModal } from './components/shell/EndGameModal'
 import { getThemeStyles } from './game/themes'
 

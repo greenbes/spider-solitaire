@@ -6,7 +6,6 @@ import { FoundationArea } from './FoundationArea'
 import { isValidMove, canMoveSameSequence } from '../../game/moves'
 import { getThemeStyles } from '../../game/themes'
 import { useGameBoardKeyboardNavigation } from '../../hooks/useGameBoardKeyboardNavigation'
-import type { KeyboardSelection } from '../../hooks/useGameBoardKeyboardNavigation'
 
 interface DragState {
   fromColumnId: string
@@ -31,7 +30,7 @@ export function GameBoard({
 
   const { kbFocus, kbSelected, handleKeyDown } = useGameBoardKeyboardNavigation({
     game,
-    onMoveCards: onMoveCards,
+    onMoveCards: onMoveCards ?? (() => {}),
   })
 
   // Check if any column is empty (deal is disabled if so)
