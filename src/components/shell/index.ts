@@ -9,3 +9,5 @@ export type { SettingsModalProps } from './SettingsModal'
 
 export { NewGameModal } from './NewGameModal'
 export type { NewGameModalProps } from './NewGameModal'
+
+export { EndGameModal } from './EndGameModal'

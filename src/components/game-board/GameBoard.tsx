@@ -1,10 +1,12 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import type { GameBoardProps, Column as ColumnType } from '../../game/types'
 import { Column } from './Column'
 import { StockPile } from './StockPile'
 import { FoundationArea } from './FoundationArea'
 import { isValidMove, canMoveSameSequence } from '../../game/moves'
 import { getThemeStyles } from '../../game/themes'
+import { useGameBoardKeyboardNavigation } from '../../hooks/useGameBoardKeyboardNavigation'
+import type { KeyboardSelection } from '../../hooks/useGameBoardKeyboardNavigation'
 
 interface DragState {
   fromColumnId: string
@@ -16,11 +18,6 @@ interface MoveSource {
   cardIndex: number
 }
 
-interface KeyboardSelection {
-  columnIndex: number
-  cardIndex: number
-}
-
 export function GameBoard({
   game,
   preferences,
@@ -29,10 +26,13 @@ export function GameBoard({
   onDeal,
 }: GameBoardProps) {
   const [dragState, setDragState] = useState<DragState | null>(null)
-  const [kbFocus, setKbFocus] = useState<KeyboardSelection | null>(null)
-  const [kbSelected, setKbSelected] = useState<KeyboardSelection | null>(null)
   const boardRef = useRef<HTMLDivElement>(null)
   const themeStyles = getThemeStyles(preferences.theme)
+
+  const { kbFocus, kbSelected, handleKeyDown } = useGameBoardKeyboardNavigation({
+    game,
+    onMoveCards: onMoveCards,
+  })
 
   // Check if any column is empty (deal is disabled if so)
   const hasEmptyColumn = game.columns.some((col) => col.cards.length === 0)
@@ -87,149 +87,6 @@ export function GameBoard({
 
     return isValidTargetForSource(source, targetColumn.id)
   }
-
-  // Find the deepest movable card index in a column (start of movable sequence)
-  const findMovableStart = useCallback((column: ColumnType): number => {
-    // Returns the smallest index such that the sequence from that index is movable
-    if (column.cards.length === 0) return 0
-    let best = column.cards.length - 1
-    for (let i = column.cards.length - 1; i >= 0; i--) {
-      if (canMoveSameSequence(column, i)) {
-        best = i
-      } else {
-        break
-      }
-    }
-    return best
-  }, [])
-
-  const clampFocus = useCallback(
-    (columnIndex: number, cardIndex: number): KeyboardSelection => {
-      const col = game.columns[columnIndex]
-      if (!col || col.cards.length === 0) {
-        return { columnIndex, cardIndex: 0 }
-      }
-      const movableStart = findMovableStart(col)
-      return {
-        columnIndex,
-        cardIndex: Math.max(movableStart, Math.min(cardIndex, col.cards.length - 1)),
-      }
-    },
-    [game.columns, findMovableStart]
-  )
-
-  // Keyboard event handler on the board container
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      // Initialize focus on first key press
-      if (!kbFocus) {
-        const firstNonEmpty = game.columns.findIndex((c) => c.cards.length > 0)
-        if (firstNonEmpty === -1) return
-        setKbFocus(clampFocus(firstNonEmpty, game.columns[firstNonEmpty].cards.length - 1))
-        e.preventDefault()
-        return
-      }
-
-      const current = kbFocus
-      const currentCol = game.columns[current.columnIndex]
-
-      switch (e.key) {
-        case 'ArrowLeft': {
-          e.preventDefault()
-          for (let offset = 1; offset <= game.columns.length; offset++) {
-            const next = (current.columnIndex - offset + game.columns.length) % game.columns.length
-            const col = game.columns[next]
-            if (col.cards.length > 0 || kbSelected) {
-              setKbFocus(clampFocus(next, col.cards.length - 1))
-              break
-            }
-          }
-          break
-        }
-        case 'ArrowRight': {
-          e.preventDefault()
-          for (let offset = 1; offset <= game.columns.length; offset++) {
-            const next = (current.columnIndex + offset) % game.columns.length
-            const col = game.columns[next]
-            if (col.cards.length > 0 || kbSelected) {
-              setKbFocus(clampFocus(next, col.cards.length - 1))
-              break
-            }
-          }
-          break
-        }
-        case 'ArrowUp': {
-          e.preventDefault()
-          if (!currentCol || currentCol.cards.length === 0) break
-          const movableStart = findMovableStart(currentCol)
-          if (current.cardIndex > movableStart) {
-            setKbFocus({ ...current, cardIndex: current.cardIndex - 1 })
-          }
-          break
-        }
-        case 'ArrowDown': {
-          e.preventDefault()
-          if (!currentCol || currentCol.cards.length === 0) break
-          if (current.cardIndex < currentCol.cards.length - 1) {
-            setKbFocus({ ...current, cardIndex: current.cardIndex + 1 })
-          }
-          break
-        }
-        case 'Enter':
-        case ' ': {
-          e.preventDefault()
-          if (!kbSelected) {
-            // Pick up: only if focused card is part of a movable sequence
-            if (!currentCol || currentCol.cards.length === 0) break
-            if (!canMoveSameSequence(currentCol, current.cardIndex)) break
-            setKbSelected(current)
-          } else {
-            // Drop
-            const fromCol = game.columns[kbSelected.columnIndex]
-            const toCol = game.columns[current.columnIndex]
-            if (fromCol.id === toCol.id) {
-              // Deselect
-              setKbSelected(null)
-              break
-            }
-            const movingCard = fromCol.cards[kbSelected.cardIndex]
-            if (isValidMove(movingCard, toCol)) {
-              onMoveCards?.(fromCol.id, kbSelected.cardIndex, toCol.id)
-            }
-            setKbSelected(null)
-          }
-          break
-        }
-        case 'Escape': {
-          if (kbSelected) {
-            e.preventDefault()
-            setKbSelected(null)
-          }
-          break
-        }
-      }
-    },
-    [kbFocus, kbSelected, game.columns, clampFocus, findMovableStart, onMoveCards]
-  )
-
-  // After a successful move, re-clamp keyboard focus to a valid position
-  useEffect(() => {
-    if (!kbFocus) return
-    const col = game.columns[kbFocus.columnIndex]
-    if (!col || col.cards.length === 0) {
-      // Find next non-empty column
-      const next = game.columns.findIndex((c) => c.cards.length > 0)
-      if (next >= 0) {
-        setKbFocus(clampFocus(next, game.columns[next].cards.length - 1))
-      } else {
-        setKbFocus(null)
-      }
-      return
-    }
-    if (kbFocus.cardIndex >= col.cards.length) {
-      setKbFocus(clampFocus(kbFocus.columnIndex, col.cards.length - 1))
-    }
-  }, [game.columns, kbFocus, clampFocus])
 
   return (
     <div
